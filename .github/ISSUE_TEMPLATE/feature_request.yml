@@ -1,0 +1,16 @@
+name: Supported behavior request
+description: Propose a bounded conversion rule or documentation improvement.
+body:
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Useful behavior and primary reference
+      description: Provide a harmless example and the source-library or destination specification.
+    validations:
+      required: true
+  - type: textarea
+    id: semantics
+    attributes:
+      label: Expected translation and edge cases
+    validations:
+      required: true

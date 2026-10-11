@@ -1,0 +1,18 @@
+REM InoQuill 1.0.0 | DuckyScript 3.0
+ATTACKMODE HID
+REM setup()
+DELAY 2000
+SPACE
+SPACE
+STRING indented text
+SPACE
+SPACE
+HOLD ENTER
+RELEASE ENTER
+STRING column A
+TAB
+STRING column B
+ENTER
+STRING A quote: "hello"
+ENTER
+REM loop() one iteration

@@ -1,0 +1,8 @@
+REM InoQuill 1.0.0 | DuckyScript 3.0
+ATTACKMODE HID
+REM setup()
+DELAY 65535
+DELAY 54465
+STRING The two-minute wait is complete.
+ENTER
+REM loop() one iteration

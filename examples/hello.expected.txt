@@ -1,0 +1,10 @@
+REM InoQuill 1.0.0 | DuckyScript 3.0
+ATTACKMODE HID
+REM setup()
+DELAY 2000
+REM loop() one iteration
+STRING Hello from InoQuill!
+ENTER
+DELAY 500
+STRING Arduino to DuckyScript
+ENTER

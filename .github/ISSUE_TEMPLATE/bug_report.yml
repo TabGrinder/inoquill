@@ -1,0 +1,33 @@
+name: Translation bug
+description: Report a reproducible problem with a harmless, redacted sketch.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "Security vulnerabilities: follow SECURITY.md. Do not post secrets or exploit details here."
+  - type: input
+    id: version
+    attributes:
+      label: InoQuill version
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal source and conversion options
+      description: Include only harmless code. Remove private identifiers and endpoints.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual result
+    validations:
+      required: true
+  - type: dropdown
+    id: stage
+    attributes:
+      label: Where does it fail?
+      options: [Translation, Destination compilation, Physical-device behavior, Interface]
+    validations:
+      required: true

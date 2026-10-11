@@ -1,0 +1,1001 @@
+export const wikiPages = [
+  {
+    "id": "Home",
+    "title": "Overview",
+    "summary": "A quick introduction and a guide to your first conversion.",
+    "tags": "start overview educational",
+    "blocks": [
+      {
+        "type": "p",
+        "text": "InoQuill helps you turn Arduino keyboard sketches into DuckyScript for your device. Everything runs in your browser. Start with an example or your own sketch, then check the result before downloading it."
+      },
+      {
+        "type": "p",
+        "text": "InoQuill is free to use, modify, and share under the MIT license."
+      },
+      {
+        "type": "h2",
+        "text": "Three steps from sketch to script"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Add a sketch: paste your code, choose a file, or try an example.",
+          "Convert and review: choose your device, select Convert sketch, and read the output and any notices.",
+          "Download your script: use the instructions for your device to prepare and test it."
+        ]
+      },
+      {
+        "type": "note",
+        "text": "A successful conversion means InoQuill could translate the operations in your sketch. You still need to review the script, compile it if your device requires that, and test it with the right keyboard layout."
+      },
+      {
+        "type": "h2",
+        "text": "Where to start"
+      },
+      {
+        "type": "links",
+        "items": [
+          {
+            "label": "Getting started",
+            "href": "#wiki/Getting-Started"
+          },
+          {
+            "label": "Compatibility",
+            "href": "#wiki/Compatibility"
+          },
+          {
+            "label": "Key codes and modifiers",
+            "href": "#wiki/Keys"
+          },
+          {
+            "label": "Troubleshooting",
+            "href": "#wiki/Diagnostics"
+          },
+          {
+            "label": "Use disclaimer",
+            "href": "#wiki/Disclaimer"
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "What to look for"
+      },
+      {
+        "type": "list",
+        "items": [
+          "If InoQuill cannot determine what an operation does, it asks you to review it before exporting.",
+          "Source trace connects each output instruction to the line in your sketch.",
+          "Download a review report to keep the selected settings, diagnostic messages, and delay totals.",
+          "Conversion runs separately from the interface, with limits on processing time and output size. InoQuill does not run or upload your sketch."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Visit Project to learn about InoQuill and the tools that inspired it. The guides here cover conversion, device setup, and troubleshooting."
+      }
+    ]
+  },
+  {
+    "id": "Getting-Started",
+    "title": "Getting started",
+    "summary": "Start with a simple greeting and review the result.",
+    "tags": "setup hello installation first example",
+    "blocks": [
+      {
+        "type": "p",
+        "text": "This example types a greeting into a text editor. When you are ready to test it on your device, open a blank document on a computer you own and keep that editor in focus."
+      },
+      {
+        "type": "h2",
+        "text": "Find your way around the Workbench"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Follow the three steps above the editors: Add a sketch, Convert and review, Download your script.",
+          "DuckyScript version and Device appear above the editors. Open About this DuckyScript version for details. After conversion, device instructions appear beside Prepare your download.",
+          "Select Import sketch or Try an example above the editors, or paste your code into Arduino sketch.",
+          "Click Convert sketch, then review DuckyScript output and the notices below the editors.",
+          "Copy and Download script become available after a conversion without blocking errors. Use Source trace to inspect each instruction.",
+          "The Wiki explains supported syntax, output targets and troubleshooting. Converted scripts and review reports can be downloaded from the Workbench."
+        ]
+      },
+      {
+        "type": "note",
+        "text": "The example below uses DuckyScript 3.0. For another device, choose its preset first. Check Output targets for the file format and preparation steps."
+      },
+      {
+        "type": "h2",
+        "text": "First sketch"
+      },
+      {
+        "type": "code",
+        "text": "#include \"DigiKeyboard.h\"\nvoid setup() {\n  DigiKeyboard.delay(2000);\n  DigiKeyboard.println(\"Hello from InoQuill!\");\n}\nvoid loop() {}",
+        "language": "cpp"
+      },
+      {
+        "type": "h2",
+        "text": "What the output looks like"
+      },
+      {
+        "type": "code",
+        "text": "ATTACKMODE HID\nDELAY 2000\nSTRING Hello from InoQuill!\nENTER",
+        "language": "text"
+      },
+      {
+        "type": "p",
+        "text": "STRING types the greeting and ENTER starts a new line. The download also includes the converter version and, if selected, comments explaining the structure. This sketch already waits two seconds. Leave Extra startup delay at 0 unless you want to add more time."
+      },
+      {
+        "type": "h2",
+        "text": "Prepare this example for your device"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Start with One pass through loop(), or choose setup() only if all the actions you need are in setup().",
+          "Check any errors first. If a notice says that a board action was left out or a held key was released, make sure the result still matches your intent.",
+          "Select Download script. For this 3.0 example, the filename ends in .ducky3.0.txt.",
+          "For the USB Rubber Ducky (2022), open the script in PayloadStudio, choose your computer’s keyboard layout, and compile it. Test the resulting inject.bin with your own device. For other devices, follow Output targets and devices."
+        ]
+      },
+      {
+        "type": "links",
+        "items": [
+          {
+            "label": "Hak5 PayloadStudio",
+            "href": "https://payloadstudio.hak5.org/community/"
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Find a guide quickly"
+      },
+      {
+        "type": "p",
+        "text": "Search by topic, command, or a few words from your sketch. The search includes guide text, tables, and examples. Clear the search box to see all guides again."
+      },
+      {
+        "type": "p",
+        "text": "Save your sketch as a UTF-8 text file before importing it. If the file uses another encoding, InoQuill asks you to save it as UTF-8 and try again. Files can be up to 200 KB (200,000 bytes)."
+      },
+      {
+        "type": "h2",
+        "text": "Recover a replaced sketch"
+      },
+      {
+        "type": "p",
+        "text": "Use Undo after clearing the editor, loading an example, or importing a file. It restores the previous sketch, its original filename, and your chosen download name. Up to five replacements are kept in memory until you reload or close the page. Undo does not change the selected device or conversion settings; convert again to check the restored sketch."
+      },
+      {
+        "type": "h2",
+        "text": "Name your download"
+      },
+      {
+        "type": "p",
+        "text": "After a successful conversion, enter a name in Prepare your download. The filename below the field shows exactly what will be saved, including the DuckyScript version and .txt extension. Spaces and unsupported filename characters become hyphens."
+      },
+      {
+        "type": "p",
+        "text": "Open Conversion options to change how loop() is handled, add a startup delay, or include explanatory comments. These options do not run your sketch."
+      }
+    ]
+  },
+  {
+    "id": "Output-Targets",
+    "title": "Output targets and devices",
+    "summary": "Choose a DuckyScript version and prepare the download for your device.",
+    "tags": "target device duckyscript 1.0 2.0 3.0 flipper bunny croc rubber ducky delays",
+    "blocks": [
+      {
+        "type": "p",
+        "text": "Choose your device first. InoQuill selects its DuckyScript version and shows how to prepare the download. You can also choose a version directly; the device selection will update to match. Select Other compatible device if you need to choose the version yourself."
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Language",
+          "Presets",
+          "Preparation"
+        ],
+        "rows": [
+          [
+            "DuckyScript 1.0",
+            "Classic USB Rubber Ducky; Flipper Zero",
+            "Classic: compile with a compatible encoder/layout. Flipper: copy the .txt file to /badusb and open it in BadUSB."
+          ],
+          [
+            "DuckyScript 2.0",
+            "Bash Bunny; Key Croc",
+            "Bash Bunny: QUACK-loadable keystroke file. Key Croc: quoted inline QUACK snippet. Configure HID, keyboard layout, and triggers separately."
+          ],
+          [
+            "DuckyScript 3.0",
+            "USB Rubber Ducky (2022)",
+            "Compile source in Hak5 PayloadStudio with the host layout and deploy inject.bin."
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "What each version supports"
+      },
+      {
+        "type": "list",
+        "items": [
+          "All three versions support text, keyboard shortcuts, delays, and finite loops that InoQuill can expand into individual commands.",
+          "The 3.0 profile adds ATTACKMODE HID. It can use WHILE for continuous loops, HOLD and RELEASE for held keys, and INJECT_MOD for modifiers sent on their own.",
+          "The 1.0 and 2.0 profiles leave out commands specific to 3.0. A key press followed immediately by a release can become a tap or shortcut. A notice explains the change.",
+          "The 1.0 and 2.0 profiles cannot translate continuous loops, timed key holds, overlapping key combinations, or modifiers sent on their own.",
+          "The 2.0 profile exports keyboard commands, not a complete device payload. Bash Bunny receives a keystroke file to load with QUACK. Key Croc receives inline QUACK commands with quoted text arguments."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Load a script on Bash Bunny"
+      },
+      {
+        "type": "p",
+        "text": "Save the exported file as keystrokes.txt in switch1. In a separate device payload, enable HID and load the file. Confirm paths and layout against the installed firmware documentation."
+      },
+      {
+        "type": "code",
+        "language": "sh",
+        "text": "ATTACKMODE HID\nQUACK switch1/keystrokes.txt"
+      },
+      {
+        "type": "note",
+        "text": "Bash Bunny receives a keystroke file; Key Croc receives QUACK commands with quoted STRING arguments. You still need to configure the device payload and its trigger. These downloads are intended for the device, not for direct use in a computer’s shell. Digispark sketches can be used as input, but a stock Digispark cannot run the downloaded DuckyScript files."
+      },
+      {
+        "type": "h2",
+        "text": "Delays and timing"
+      },
+      {
+        "type": "p",
+        "text": "InoQuill splits long waits into DELAY commands of up to 65,535 ms, or 10,000 ms in the 2.0 profile. The total stays the same. These limits apply to InoQuill’s output; other tools may use different limits. In the 3.0 profile, each positive delay must be at least 20 ms. For example, a 65,536 ms wait becomes 65,516 ms plus 20 ms. The 1.0 and 2.0 profiles accept positive whole-number delays. A zero delay produces no command."
+      },
+      {
+        "type": "note",
+        "text": "Delay values can range from 0 to 4,294,967,295 ms. Very large values may still exceed the output or processing limits. The displayed total includes delays only; typing and USB communication take additional time. Test the timing on the computer and device you plan to use."
+      },
+      {
+        "type": "links",
+        "items": [
+          {
+            "label": "Hak5 language history",
+            "href": "https://shop.hak5.org/pages/duckyscript-3-0"
+          },
+          {
+            "label": "Hak5 delay semantics",
+            "href": "https://documentation.hak5.org/hak5-usb-rubber-ducky/ducky-script-basics/delay"
+          },
+          {
+            "label": "Bash Bunny QUACK",
+            "href": "https://documentation.hak5.org/bash-bunny/writing-payloads/quack"
+          },
+          {
+            "label": "Flipper BadUSB file format",
+            "href": "https://developer.flipper.net/flipperzero/doxygen/badusb_file_format.html"
+          }
+        ]
+      },
+      {
+        "type": "links",
+        "items": [
+          {
+            "label": "Key Croc DuckyScript 2.0 and QUACK limits",
+            "href": "https://documentation.hak5.org/key-croc/writing-payloads/the-quack-command"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "Compatibility",
+    "title": "Compatibility",
+    "summary": "Check which parts of your sketch can be translated and where changes may be needed.",
+    "tags": "library DigiKeyboard Keyboard arduino unsupported scope types",
+    "blocks": [
+      {
+        "type": "note",
+        "text": "InoQuill supports the Arduino keyboard operations listed below. It does not support all of C++, the Arduino preprocessor, board firmware, or every DuckyScript feature."
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Source operation",
+          "Translation",
+          "Review requirement"
+        ],
+        "rows": [
+          [
+            "DigiKeyboard.print / println",
+            "STRING with whitespace keys; println adds ENTER",
+            "ASCII text only; no printing with held keys"
+          ],
+          [
+            "sendKeyStroke(key, mask)",
+            "Key combination with left-side modifiers",
+            "DigiKeyboard numbers are HID usages"
+          ],
+          [
+            "sendKeyPress(key, mask)",
+            "3.0: HOLD / RELEASE; portable targets: immediate tap/shortcut only",
+            "USB report timing differs"
+          ],
+          [
+            "Keyboard.press / release / releaseAll",
+            "3.0: explicit held-key state; portable targets: immediate tap/shortcut only",
+            "Right-side modifiers are not supported"
+          ],
+          [
+            "Keyboard.write",
+            "Press and release a supported key",
+            "Review the Keys page for ASCII constraints"
+          ],
+          [
+            "delay / DigiKeyboard.delay",
+            "DELAY with a resolved value",
+            "0 is omitted; 3.0 minimum 20 ms; long waits split without changing the total"
+          ],
+          [
+            "Keyboard.begin / end; DigiKeyboard.update",
+            "No equivalent device initialization command",
+            "end releases tracked keys; no USB emulation"
+          ],
+          [
+            "pinMode / digitalWrite",
+            "Omitted with a notice",
+            "Confirm GPIO is not essential"
+          ],
+          [
+            "Object #define and initialized variables",
+            "Constant evaluation",
+            "No function macros or conditional preprocessing"
+          ],
+          [
+            "if; bounded for / while",
+            "Evaluate and expand locally",
+            "No host or sensor state"
+          ],
+          [
+            "Simple void helpers",
+            "Expand calls with value parameters",
+            "No mutation of inherited state"
+          ],
+          [
+            "loop()",
+            "Once, continuously, or excluded",
+            "Continuous mode rejects evolving global state"
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Values and expressions"
+      },
+      {
+        "type": "p",
+        "text": "You can use decimal, hexadecimal, and binary integers; initialized integer variables; ASCII characters; literal string arrays and pointers; and Arduino String values within the listed limits. InoQuill also recognizes F(\"text\") and adjacent string literals. Expressions can use integer arithmetic, comparisons, and Boolean and bitwise operators. If a value overflows its supported type, conversion stops with an error."
+      },
+      {
+        "type": "h2",
+        "text": "What is not supported"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Sensors, analogRead, digitalRead, Serial, network libraries, Mouse and host feedback.",
+          "Classes, templates, structs, complex pointers, general arrays, casts, floating point and function return values.",
+          "Recursive or overloaded functions, static local state, variable shadowing and function-style macros.",
+          "Right-side modifiers, non-ASCII text, multimedia and a complete numeric-keypad mapping.",
+          "Leading-zero numeric literals: write decimal, hex or binary explicitly."
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Size and processing limits"
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Resource",
+          "Limit"
+        ],
+        "rows": [
+          [
+            "Imported file",
+            "200,000 bytes"
+          ],
+          [
+            "Source API input",
+            "200,000 characters"
+          ],
+          [
+            "Tokens",
+            "50,000"
+          ],
+          [
+            "Syntax nesting",
+            "64 levels"
+          ],
+          [
+            "Each loop",
+            "1,000 iterations"
+          ],
+          [
+            "Interpreter steps",
+            "5,000"
+          ],
+          [
+            "Function calls",
+            "16 nested levels"
+          ],
+          [
+            "Output",
+            "10,000 lines"
+          ],
+          [
+            "Browser worker",
+            "3 seconds"
+          ]
+        ]
+      },
+      {
+        "type": "links",
+        "items": [
+          {
+            "label": "Control flow",
+            "href": "#wiki/Control-Flow"
+          },
+          {
+            "label": "Troubleshooting",
+            "href": "#wiki/Diagnostics"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "Keys",
+    "title": "Key codes and modifiers",
+    "summary": "Find the right key codes for DigiKeyboard and Arduino Keyboard.",
+    "tags": "press hold release sendKeyStroke GUI CTRL SHIFT ALT key masks",
+    "blocks": [
+      {
+        "type": "note",
+        "text": "The HOLD/RELEASE example below targets DuckyScript 3.0. Portable 1.0 and 2.0 profiles convert immediate press/release sequences to taps or shortcuts. Delays while a key is held, overlapping chords, and standalone modifiers require manual adaptation."
+      },
+      {
+        "type": "p",
+        "text": "The two libraries use different numbers for some keys. InoQuill checks whether a call uses DigiKeyboard or Keyboard before choosing the matching key code."
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Intent",
+          "DigiKeyboard",
+          "Arduino Keyboard"
+        ],
+        "rows": [
+          [
+            "Enter",
+            "KEY_ENTER or HID usage 40",
+            "KEY_RETURN or 0xB0"
+          ],
+          [
+            "Lowercase r",
+            "KEY_R or HID usage 21",
+            "'r' or ASCII 114"
+          ],
+          [
+            "Left Control",
+            "MOD_CONTROL_LEFT mask (1)",
+            "KEY_LEFT_CTRL"
+          ],
+          [
+            "Left Shift",
+            "MOD_SHIFT_LEFT mask (2)",
+            "KEY_LEFT_SHIFT"
+          ],
+          [
+            "Left Alt",
+            "MOD_ALT_LEFT mask (4)",
+            "KEY_LEFT_ALT"
+          ],
+          [
+            "Left GUI",
+            "MOD_GUI_LEFT mask (8)",
+            "KEY_LEFT_GUI"
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Send a key combination"
+      },
+      {
+        "type": "code",
+        "text": "DigiKeyboard.sendKeyStroke(KEY_R, MOD_GUI_LEFT);",
+        "language": "cpp"
+      },
+      {
+        "type": "code",
+        "text": "GUI r",
+        "language": "text"
+      },
+      {
+        "type": "p",
+        "text": "Combine modifier masks with the bitwise OR operator, |. InoQuill supports left-side modifiers with mask values from 0 to 15. A key value of 0 without modifiers sends no key. In the 3.0 profile, a modifier on its own uses INJECT_MOD."
+      },
+      {
+        "type": "h2",
+        "text": "Hold and release keys"
+      },
+      {
+        "type": "code",
+        "text": "Keyboard.press(KEY_LEFT_CTRL);\nKeyboard.press('a');\ndelay(100);\nKeyboard.releaseAll();",
+        "language": "cpp"
+      },
+      {
+        "type": "code",
+        "text": "INJECT_MOD\nHOLD CTRL\nHOLD a\nDELAY 100\nRELEASE a\nINJECT_MOD\nRELEASE CTRL",
+        "language": "text"
+      },
+      {
+        "type": "p",
+        "text": "Pressing a key that is already held does not add another HOLD command. releaseAll releases keys in the reverse order they were pressed. If any keys remain held at the end, InoQuill releases them and adds a review notice. Printing text while holding keys is not supported because the result can depend on how the source library handles keyboard reports."
+      },
+      {
+        "type": "h2",
+        "text": "Choose the keyboard layout"
+      },
+      {
+        "type": "p",
+        "text": "Use the keyboard layout configured on the computer that will receive the keystrokes. Your Arduino library may also have its own layout settings. InoQuill uses the documented default key mappings; it cannot read the library’s build settings or create layout files. Check punctuation and shortcuts when you test the script."
+      },
+      {
+        "type": "links",
+        "items": [
+          {
+            "label": "Arduino Keyboard source",
+            "href": "https://github.com/arduino-libraries/Keyboard"
+          },
+          {
+            "label": "DigiKeyboard source",
+            "href": "https://github.com/digistump/DigistumpArduino/blob/master/digistump-avr/libraries/DigisparkKeyboard/DigiKeyboard.h"
+          },
+          {
+            "label": "Hak5 held keys",
+            "href": "https://documentation.hak5.org/hak5-usb-rubber-ducky/advanced-features/holding-keys"
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Check punctuation before using a script"
+      },
+      {
+        "type": "p",
+        "text": "Choose Check keyboard punctuation from Try an example. Convert it for your device, then use the device’s normal compilation or loading process. Open a blank text editor on a computer you own and compare the typed text with the example. Check symbols such as @, brackets, slashes, and question marks. This is a manual check of the keyboard layout; InoQuill does not remap layouts or verify the typed result."
+      }
+    ]
+  },
+  {
+    "id": "Text",
+    "title": "Text and escaping",
+    "summary": "See how spaces, line breaks, and escape sequences become DuckyScript.",
+    "tags": "strings tabs quotes spaces ASCII dollar newline CRLF",
+    "blocks": [
+      {
+        "type": "p",
+        "text": "InoQuill reads the supported C++ string first, then writes the corresponding DuckyScript instructions. Escape sequences are interpreted as C++ text rather than copied directly into the output."
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Source text",
+          "Output behavior"
+        ],
+        "rows": [
+          [
+            "Normal ASCII text",
+            "STRING text"
+          ],
+          [
+            "Leading or trailing spaces",
+            "One SPACE per space"
+          ],
+          [
+            "Internal spaces",
+            "Remain inside STRING"
+          ],
+          [
+            "\\t",
+            "TAB"
+          ],
+          [
+            "\\n or \\r",
+            "ENTER"
+          ],
+          [
+            "\\r\\n",
+            "One ENTER"
+          ],
+          [
+            "println()",
+            "An additional ENTER after the supplied text"
+          ],
+          [
+            "\\\\ and escaped quotes",
+            "Literal backslash or quote"
+          ],
+          [
+            "F(\"a\" \"b\")",
+            "Concatenated constant text"
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "Whitespace example"
+      },
+      {
+        "type": "code",
+        "text": "Keyboard.print(\"  a b  \");",
+        "language": "cpp"
+      },
+      {
+        "type": "code",
+        "text": "SPACE\nSPACE\nSTRING a b\nSPACE\nSPACE",
+        "language": "text"
+      },
+      {
+        "type": "h2",
+        "text": "Text limits"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Non-ASCII text is blocked because mapping and encoding depend on the source and target layouts.",
+          "Text containing a dollar sign followed by a letter or underscore needs review because DuckyScript may interpret it as a variable reference. This check does not reject every dollar sign.",
+          "NUL and unsupported control characters are rejected. Hex escapes are limited to two digits.",
+          "Numbers passed to print are written in decimal. Additional formatting arguments, such as HEX or a precision value, are not supported in v1.0."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Use printable, harmless text in examples and reports. Reports may contain translated strings, so remove personal data before sharing them."
+      }
+    ]
+  },
+  {
+    "id": "Control-Flow",
+    "title": "Control flow and scope",
+    "summary": "Choose what happens to setup(), loop(), and repeated actions.",
+    "tags": "for while if setup loop helper functions macros constants",
+    "blocks": [
+      {
+        "type": "note",
+        "text": "For all three versions, InoQuill turns supported finite loops into repeated output commands. Repeating loop() continuously requires DuckyScript 3.0 and uses WHILE commands. Selecting an older version switches the loop option to One pass through loop()."
+      },
+      {
+        "type": "h2",
+        "text": "How setup() and loop() are handled"
+      },
+      {
+        "type": "p",
+        "text": "InoQuill translates setup() first. Variables declared inside setup() stay there; they do not become local variables in loop(). Supported changes to global values carry over into loop(). Helper functions can use global values and their own parameters, but not local variables from the calling function. Variable shadowing and static local variables are not supported."
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Mode",
+          "Behavior",
+          "Suitable for"
+        ],
+        "rows": [
+          [
+            "One pass through loop()",
+            "setup plus one loop iteration",
+            "Reviewing an initial translation"
+          ],
+          [
+            "Repeat continuously",
+            "setup followed by WHILE TRUE / END_WHILE",
+            "A repeatable sequence with no evolving global state"
+          ],
+          [
+            "setup() only",
+            "loop is excluded",
+            "Sketches that perform all intended actions in setup"
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "How repeated actions are translated"
+      },
+      {
+        "type": "code",
+        "text": "for (int i = 0; i < 3; i++) {\n  Keyboard.println(\"Test\");\n  delay(100);\n}",
+        "language": "cpp"
+      },
+      {
+        "type": "p",
+        "text": "This example produces three copies of the text and delay commands. InoQuill evaluates if conditions during conversion. If a condition depends on a sensor reading or other information it cannot determine, conversion stops with an error."
+      },
+      {
+        "type": "h2",
+        "text": "A few limits to keep in mind"
+      },
+      {
+        "type": "list",
+        "items": [
+          "A continuous loop cannot change inherited global variables. Using only their initial values would make later repetitions behave differently from the sketch.",
+          "Helper functions cannot change inherited global variables. Pass the values they need as arguments.",
+          "Loop counters declared in for are scoped to that loop. break is valid only inside a loop.",
+          "while(true) with no body is a halt on the source board; it is rejected rather than skipped.",
+          "No variable updates are emitted as DuckyScript VAR operations. This release intentionally uses static evaluation."
+        ]
+      },
+      {
+        "type": "note",
+        "text": "InoQuill may reject a short-circuit expression if part of it contains a value it cannot determine. It does not implement every C++ evaluation rule. Where appropriate, rewrite the condition using values known at conversion time."
+      }
+    ]
+  },
+  {
+    "id": "Diagnostics",
+    "title": "Diagnostics and troubleshooting",
+    "summary": "Understand conversion messages and find your next step.",
+    "tags": "errors warnings export report worker blocked trace fixes",
+    "blocks": [
+      {
+        "type": "h2",
+        "text": "My sketch works on Digispark. Why does conversion fail?"
+      },
+      {
+        "type": "p",
+        "text": "A working Arduino sketch may use features that have no equivalent in the selected DuckyScript version. Check the first error and its source line to see which operation needs attention. Long delays are supported: for example, a 120,000 ms wait becomes DELAY 65535 followed by DELAY 54465 in the 1.0 and 3.0 profiles. The 2.0 profile uses twelve DELAY 10000 commands. The total wait stays the same."
+      },
+      {
+        "type": "note",
+        "text": "A notice about GPIO or DigiKeyboard.update does not prevent downloading the result. An error does. For the 3.0 profile, a positive delay must be at least 20 ms. If you need help with another error, share a small example that reproduces it and include your selected device and language."
+      },
+      {
+        "type": "table",
+        "headers": [
+          "Symptom",
+          "Meaning",
+          "Next step"
+        ],
+        "rows": [
+          [
+            "Cannot resolve value",
+            "Expression depends on unavailable data",
+            "Replace with a documented constant or adapt manually"
+          ],
+          [
+            "Unsupported call",
+            "This function is not supported by the converter",
+            "Check the Compatibility guide before changing or removing the call"
+          ],
+          [
+            "Review: GPIO omitted",
+            "Hardware action has no equivalent",
+            "Confirm it is optional for your sequence"
+          ],
+          [
+            "Pending held keys released",
+            "Keys still held at the end of the sketch are released in the output",
+            "Add explicit source releases if that matches your intent"
+          ],
+          [
+            "The converter could not load",
+            "App was not served correctly or browser blocked modules",
+            "Reload the page. For a local copy, serve dist over HTTP/HTTPS and check module loading in the browser console."
+          ],
+          [
+            "Conversion took longer than 3 seconds",
+            "Conversion took longer than the three-second limit",
+            "Try fewer loop iterations or a smaller sketch that shows the same issue"
+          ],
+          [
+            "Output is blocked",
+            "At least one translation error occurred",
+            "Select the source line beside an error, or download the review report for details"
+          ],
+          [
+            "Output does not type correctly",
+            "Compiler, focus, layout or timing differs",
+            "Check PayloadStudio layout, application focus and startup waits"
+          ]
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "What is in the review report?"
+      },
+      {
+        "type": "p",
+        "text": "The JSON report includes your settings and the conversion result. The ok field indicates whether conversion succeeded. diagnostics lists errors and notices, and sourceMap links output instructions to sketch lines. stats.delayMs is the total programmed delay; for continuous loops, it covers setup and one iteration. Reports do not include partial output from a failed conversion."
+      },
+      {
+        "type": "h2",
+        "text": "Reporting a problem"
+      },
+      {
+        "type": "list",
+        "items": [
+          "Include a minimal, harmless sketch and exact converter version.",
+          "Include your device, DuckyScript version, and conversion settings. Explain what you expected and what happened instead.",
+          "Attach a redacted review report. Never include passwords, private endpoints or personal information.",
+          "State whether the failure occurs during translation, destination compilation or physical-device testing."
+        ]
+      },
+      {
+        "type": "p",
+        "text": "Errors appear first, followed by review notices and other information. Select the line number next to a message to find it in your sketch, or open the linked guide. If conversion times out or cannot start, the message stays visible. Editing the sketch or changing a setting clears the previous output so you do not accidentally download an outdated result."
+      },
+      {
+        "type": "h2",
+        "text": "Prepare a bug report"
+      },
+      {
+        "type": "p",
+        "text": "Select Prepare bug report to download a Markdown template with the version, browser information, and current conversion settings. It does not attach your sketch, output, or diagnostics, and it sends nothing automatically. Add the steps to reproduce the problem, your device and firmware, the keyboard layout, and what you expected. Review the file before sharing it with the maintainer."
+      },
+      {
+        "type": "note",
+        "text": "Download report is different: it contains the conversion result and may include text from your sketch. Remove private information before sharing it."
+      }
+    ]
+  },
+  {
+    "id": "Disclaimer",
+    "title": "Use disclaimer",
+    "summary": "Please read this before using a script on a device.",
+    "tags": "educational only legal authorization disclaimer safety copyright",
+    "blocks": [
+      {
+        "type": "h2",
+        "text": "For educational purposes only"
+      },
+      {
+        "type": "p",
+        "text": "InoQuill is provided for learning, security awareness demonstrations and authorized security research. Use it only on systems you own or for which you have explicit permission from the responsible owner. Written authorization, a defined scope, and agreed handling of data are recommended for professional engagements."
+      },
+      {
+        "type": "p",
+        "text": "Do not use this project to gain unauthorized access, collect credentials without permission, evade an agreed scope, disrupt systems, or compromise other people’s privacy. Users are responsible for their actions and for meeting applicable laws, policies, and engagement terms. Describing an activity as educational does not make an unauthorized activity permitted."
+      },
+      {
+        "type": "h2",
+        "text": "Review before execution"
+      },
+      {
+        "type": "p",
+        "text": "InoQuill translates source text; it does not certify that a sketch or generated script is safe, lawful, or suitable for a target. Read the complete output, confirm keyboard layout and timing, compile it with the intended tool, and validate it in a controlled environment before use. Never connect a device containing an unreviewed script to another person’s system."
+      },
+      {
+        "type": "h2",
+        "text": "Warranty and liability"
+      },
+      {
+        "type": "p",
+        "text": "The software is supplied under the MIT license without warranties, to the extent permitted by law. No guarantee is made about correctness, security, uninterrupted operation, compiler acceptance, or device compatibility. TabGrinder and contributors do not endorse unauthorized use. The license governs the software; this statement is not legal advice, permission to test a third party, or a promise of legal immunity."
+      },
+      {
+        "type": "h2",
+        "text": "Attribution and independence"
+      },
+      {
+        "type": "p",
+        "text": "DuckyScript and USB Rubber Ducky are trademarks of Hak5 LLC. Arduino and other referenced names belong to their respective owners. InoQuill is an independent project by TabGrinder, not affiliated with or endorsed by Hak5, Arduino, Spacehuhn, or SAPSAN. References describe technical research and inspiration; their source code and branding are not included."
+      },
+      {
+        "type": "p",
+        "text": "The name InoQuill combines .ino, the Arduino sketch extension, with quill, a pen made from a feather. It is a nod to turning one kind of script into another."
+      }
+    ]
+  },
+  {
+    "id": "References",
+    "title": "References and thanks",
+    "summary": "The projects, people, and documentation that helped shape InoQuill.",
+    "tags": "sources credits attribution Hak5 Arduino OWASP WCAG GitHub",
+    "blocks": [
+      {
+        "type": "p",
+        "text": "InoQuill grew out of an appreciation for Spacehuhn’s Duckify, Duckuino, SAPSAN Terminal, and Hak5’s documentation. Their work inspired this project and helped make it possible. Thank you to the creators and contributors who make these tools and resources available to everyone."
+      },
+      {
+        "type": "links",
+        "items": [
+          {
+            "label": "Duckify · Spacehuhn: DuckyScript to Arduino conversion",
+            "href": "https://duckify.spacehuhn.com/"
+          },
+          {
+            "label": "Duckuino: DuckyScript to Arduino in the browser",
+            "href": "https://github.com/Dukweeno/Duckuino"
+          },
+          {
+            "label": "SAPSAN Terminal: HID device documentation",
+            "href": "https://www.sapsan-terminal.com/wiki"
+          },
+          {
+            "label": "Hak5 documentation: DuckyScript syntax and behavior",
+            "href": "https://documentation.hak5.org/hak5-usb-rubber-ducky/duckyscript-tm-quick-reference"
+          },
+          {
+            "label": "Hak5 holding keys",
+            "href": "https://documentation.hak5.org/hak5-usb-rubber-ducky/advanced-features/holding-keys"
+          },
+          {
+            "label": "Arduino Keyboard library",
+            "href": "https://github.com/arduino-libraries/Keyboard"
+          },
+          {
+            "label": "DigiKeyboard source",
+            "href": "https://github.com/digistump/DigistumpArduino/blob/master/digistump-avr/libraries/DigisparkKeyboard/DigiKeyboard.h"
+          },
+          {
+            "label": "OWASP XSS prevention",
+            "href": "https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html"
+          },
+          {
+            "label": "OWASP CSP guidance",
+            "href": "https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html"
+          },
+          {
+            "label": "W3C WCAG 2.2 overview",
+            "href": "https://www.w3.org/WAI/standards-guidelines/wcag/new-in-22/"
+          },
+          {
+            "label": "GitHub wiki guidance",
+            "href": "https://docs.github.com/en/communities/documenting-your-project-with-wikis/adding-or-editing-wiki-pages"
+          },
+          {
+            "label": "GitHub private vulnerability reporting",
+            "href": "https://docs.github.com/code-security/security-advisories/working-with-repository-security-advisories/configuring-private-vulnerability-reporting-for-a-repository"
+          },
+          {
+            "label": "Wireshark contribution process",
+            "href": "https://github.com/wireshark/wireshark/blob/master/CONTRIBUTING.md"
+          }
+        ]
+      },
+      {
+        "type": "h2",
+        "text": "What these references helped with"
+      },
+      {
+        "type": "p",
+        "text": "Arduino and DigiKeyboard sources help explain key codes and keyboard reports. Hak5 documentation provides the reference for DuckyScript commands. OWASP and W3C guidance inform security and accessibility decisions, while GitHub documentation helps with project maintenance. InoQuill is independently maintained by TabGrinder; these credits do not imply affiliation or endorsement."
+      },
+      {
+        "type": "links",
+        "items": [
+          {
+            "label": "W3C WAI: form labels",
+            "href": "https://www.w3.org/WAI/tutorials/forms/labels/"
+          },
+          {
+            "label": "W3C WAI: form instructions",
+            "href": "https://www.w3.org/WAI/tutorials/forms/instructions/"
+          },
+          {
+            "label": "W3C: text spacing",
+            "href": "https://www.w3.org/WAI/WCAG22/Understanding/text-spacing/"
+          }
+        ]
+      }
+    ]
+  }
+];

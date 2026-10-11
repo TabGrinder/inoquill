@@ -1,0 +1,13 @@
+REM InoQuill 1.0.0 | DuckyScript 3.0
+ATTACKMODE HID
+REM setup()
+DELAY 2000
+INJECT_MOD
+HOLD CTRL
+HOLD a
+RELEASE a
+INJECT_MOD
+RELEASE CTRL
+STRING A reviewed keyboard sequence.
+ENTER
+REM loop() one iteration

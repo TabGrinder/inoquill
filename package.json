@@ -1,0 +1,20 @@
+{
+  "name": "inoquill",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Browser-local Arduino keyboard sketch to DuckyScript 1.0, 2.0, and 3.0 converter with device presets and source tracing.",
+  "author": "TabGrinder",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "docs": "node scripts/generate-wiki.mjs",
+    "build": "npm run docs && node scripts/package-source.mjs",
+    "check": "npm test && node scripts/check-project.mjs",
+    "prestart": "node scripts/generate-wiki.mjs && node scripts/package-source.mjs"
+  }
+}
