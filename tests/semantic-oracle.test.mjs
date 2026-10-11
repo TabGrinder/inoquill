@@ -49,7 +49,16 @@ const cases = [
   ['', '0x7fff & 0x55'],
 ];
 for (let i = 0; i < 32; i++) cases.push(['uint32_t x=305419896;', 'x >> ' + i]);
-test('independent C++ compiler agrees on 57 expressions for every target', () => {
+// Deterministic generated arithmetic cases, compiled by the independent oracle.
+let seed = 0x13579bdf;
+const random = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed; };
+const operations = ['+', '-', '*', '/', '%', '&', '|', '^', '<', '>', '==', '!='];
+for (let i = 0; i < 256; i++) {
+  const x = random(), y = random() || 1;
+  const expression = i % 4 === 0 ? '(x >> ' + (i % 32) + ')' : 'x ' + operations[i % operations.length] + ' y';
+  cases.push(['uint32_t x=' + x + ';uint32_t y=' + y + ';', expression]);
+}
+test('independent C++ compiler agrees on 313 expressions for every target', () => {
   const dir = mkdtempSync(join(tmpdir(), 'inoquill-oracle-'));
   try {
     const macros = '#define MACRO 1 + 2\n#define GROUPED (1 + 2)\n#define FORWARD MACRO\n#define ALIAS LATER\n#define LATER 42\n';
@@ -78,4 +87,19 @@ test('independent C++ compiler agrees on 57 expressions for every target', () =>
       force: true
     });
   }
+});
+test('independent C++ reference confirms the four second-review boundaries',()=>{
+ const dir=mkdtempSync(join(tmpdir(),'inoquill-boundaries-'));
+ const slash=String.fromCharCode(92);
+ const cases=[
+  ['char text[]="ABC";char *p=text;p++;','p','BC'],
+  ['char text[]="";','text ? "YES" : "NO"','YES'],
+  ['int x=0;digitalWrite(1,++x);','x','1'],
+ ];
+ try {
+  const cpp='#include <iostream>\nvoid digitalWrite(int,int){}\nint main(){\n'+cases.map(([decl,expr])=>'{'+decl+'std::cout<<('+expr+')<<"\\n";}').join('\n')+'\n// continued '+slash+'\nstd::cout<<"A";\nstd::cout<<"B\\n";\n}';
+  writeFileSync(join(dir,'reference.cpp'),cpp);
+  execFileSync('g++',['-std=c++17',join(dir,'reference.cpp'),'-o',join(dir,'reference')],{stdio:'pipe',timeout:20000});
+  assert.deepEqual(execFileSync(join(dir,'reference'),{encoding:'utf8',timeout:5000}).trimEnd().split('\n'),['BC','YES','1','B']);
+ } finally {rmSync(dir,{recursive:true,force:true});}
 });

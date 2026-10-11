@@ -37,3 +37,5 @@ This example produces three copies of the text and delay commands. InoQuill eval
 
 > InoQuill may reject a short-circuit expression if part of it contains a value it cannot determine. It does not implement every C++ evaluation rule. Where appropriate, rewrite the condition using values known at conversion time.
 
+GPIO calls are omitted only when both arguments are supported numeric expressions without side effects. A call such as digitalWrite(1, ++x) stops conversion because omitting it would also omit a state change. Move supported state changes into separate statements before the GPIO call.
+

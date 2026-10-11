@@ -18,6 +18,30 @@ import {
 } from './expressions.mjs';
 export function tokenize(source) {
   if (typeof source !== 'string') throw new ConversionError('Source must be a string.');
+  if (source.length > 200000) throw new ConversionError('Source limit: 200,000 characters.');
+  const spacedContinuation = /\\[ \t]+(?:\r\n|\r|\n)/.exec(source);
+  if (spacedContinuation) throw new ConversionError('Whitespace after a line-continuation backslash is compiler-specific. Remove that whitespace before converting.', source.slice(0, spacedContinuation.index).split(/\r\n|\r|\n/).length);
+  // C++ joins escaped physical lines before recognizing comments or tokens.
+  // Keep each resulting character's original line for diagnostics and tracing.
+  const normalized = [], physicalLines = [];
+  let physicalLine = 1;
+  for (let at = 0; at < source.length; at++) {
+    if (source[at] === '\\' && (source[at + 1] === '\n' || source[at + 1] === '\r')) {
+      at++;
+      if (source[at] === '\r' && source[at + 1] === '\n') at++;
+      physicalLine++;
+      continue;
+    }
+    let character = source[at];
+    if (character === '\r') {
+      if (source[at + 1] === '\n') at++;
+      character = '\n';
+    }
+    normalized.push(character);
+    physicalLines.push(physicalLine);
+    if (character === '\n') physicalLine++;
+  }
+  source = normalized.join('');
   let nesting = 0;
   const tokens = [];
   let i = 0,
@@ -35,6 +59,7 @@ export function tokenize(source) {
     });
   };
   while (i < source.length) {
+    line = physicalLines[i];
     let c = source[i];
     if (/\s/.test(c)) {
       if (c === '\n') line++;
@@ -122,7 +147,7 @@ export function tokenize(source) {
   tokens.push({
     v: '<eof>',
     type: 'eof',
-    line
+    line: physicalLine
   });
   return tokens;
 }
@@ -615,6 +640,13 @@ export function convert(source, options = {}) {
       }
       if (name === 'pinMode' || name === 'digitalWrite') {
         count(2);
+        for (const arg of args) {
+          try {
+            if (typeof evaluate(arg, scope) !== 'number') throw new ConversionError('Expected a numeric value.', line);
+          } catch {
+            throw new ConversionError(name + ' can only be omitted when its arguments are supported, side-effect-free numeric expressions. Move state changes into separate statements.', line);
+          }
+        }
         report('warning', name + ' has no destination GPIO equivalent and is omitted.', line);
         if (opts.comments) emit('REM OMITTED ' + name + ' (GPIO)', line);
         return;
@@ -734,7 +766,7 @@ export function convert(source, options = {}) {
         if (kind === 'char' && (typeof val !== 'number' || val < 0 || val > 127)) throw new ConversionError('char values must be ASCII.', line);
         scope.set(name, val);
         getTypes(scope).set(name, kind === 'string' ? {
-          kind: 'string'
+          kind: 'string', storage: pointer ? 'pointer' : k > 1 ? 'array' : 'String'
         } : declarationType(declaration));
         if (kind !== 'string') {
           getRanges(scope).set(name, bounds(declaration));
@@ -750,6 +782,7 @@ export function convert(source, options = {}) {
         if (getConst(scope).has(name)) throw new ConversionError('Cannot modify a constant: ' + name, line);
         if (protectedGlobals.get(scope)?.has(name)) throw new ConversionError('A helper or continuous loop cannot modify inherited state: ' + name, line);
         if (!scope.has(name)) throw new ConversionError('Undeclared variable: ' + name, line);
+        if (getTypes(scope).get(name)?.kind === 'string' && (op !== '=' || getTypes(scope).get(name).storage === 'array')) throw new ConversionError('Text and pointer arithmetic, increments, and array reassignment are not supported.', line);
         if (['++', '--'].includes(op)) {
           if (ts.length !== 2) throw new ConversionError('Unsupported increment.', line);
           scope.set(name, scope.get(name) + (op === '++' ? 1 : -1));
@@ -763,6 +796,12 @@ export function convert(source, options = {}) {
         return;
       }
       call(ts, line, scope, depth);
+    }
+
+    function condition(tokens, scope) {
+      const result = evaluate(tokens, scope);
+      if (typeof result !== 'number') throw new ConversionError('Conditions must resolve to numeric or Boolean values; text and pointer truth values need manual adaptation.', tokens[0]?.line);
+      return result !== 0;
     }
 
     function runScoped(node, scope, depth) {
@@ -810,7 +849,7 @@ export function convert(source, options = {}) {
           if (node.expr.length) throw new ConversionError('break does not take an expression.', node.line);
           return 'break';
         case 'if':
-          return runScoped(evaluate(node.expr, scope) ? node.body : node.alternate ?? {
+          return runScoped(condition(node.expr, scope) ? node.body : node.alternate ?? {
             kind: 'empty',
             line: node.line
           }, scope, depth);
@@ -820,7 +859,7 @@ export function convert(source, options = {}) {
           if (p.length !== 3) throw new ConversionError('Invalid for() statement.', node.line);
           simple(p[0], node.line, scope, depth);
           let iterations = 0;
-          while (evaluate(p[1], scope)) {
+          while (condition(p[1], scope)) {
             if (++iterations > 1000) throw new ConversionError('Maximum 1,000 iterations per loop.', node.line);
             const r = runScoped(node.body, scope, depth);
             if (r === 'return') return r;
@@ -837,11 +876,11 @@ export function convert(source, options = {}) {
         }
         case 'while': {
           if (node.body.kind === 'empty' || node.body.kind === 'block' && !node.body.body.length) {
-            if (evaluate(node.expr, scope)) throw new ConversionError('An empty infinite wait loop requires manual adaptation.', node.line);
+            if (condition(node.expr, scope)) throw new ConversionError('An empty infinite wait loop requires manual adaptation.', node.line);
             return;
           }
           let iterations = 0;
-          while (evaluate(node.expr, scope)) {
+          while (condition(node.expr, scope)) {
             if (++iterations > 1000) throw new ConversionError('An unbounded while loop requires manual adaptation.', node.line);
             const r = runScoped(node.body, scope, depth);
             if (r === 'return') return r;
@@ -960,7 +999,7 @@ export function convert(source, options = {}) {
       commands: lines.filter(s => !s.startsWith('REM') && !s.startsWith('#')).length,
       converted,
       delayMs,
-      sourceLines: typeof source === 'string' ? source.split('\n').length : 0
+      sourceLines: typeof source === 'string' ? source.split(/\r\n|\r|\n/).length : 0
     },
     options: opts
   };

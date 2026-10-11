@@ -43,3 +43,5 @@ Use printable, harmless text in examples and reports. Reports may contain transl
 
 A hexadecimal escape consumes every following hex digit, as in C++. Use adjacent strings to separate an escape from following digits: "\x41" "42" prints A42. Hex escapes outside ASCII are rejected. Arduino Keyboard string writes discard carriage returns; newline still becomes ENTER.
 
+A backslash immediately followed by a line ending joins physical lines before comments and tokens are read, as in C++. This also applies inside // comments. Source trace keeps the original physical line numbers. LF, CRLF, and CR line endings are recognized. Whitespace between the backslash and the line ending is rejected because compilers handle that extension differently.
+

@@ -175,3 +175,7 @@ See [publication readiness](docs/Publication-Readiness.md) for the license, publ
 ## Validation record
 
 See [Community validation](docs/Community-Validation.md) for automated evidence and the browser, compiler, and hardware checks still awaiting direct verification.
+
+## Latest semantic validation
+
+The second review corrected continued-comment handling and stops unsupported pointer/text operations, nonnumeric conditions and GPIO arguments with side effects before export. The current suite has 119 tests, a C++ oracle comparing 313 expressions across three profiles, and 1,000 deterministic malformed-input cases. See [the detailed evidence and limits](docs/Second-Semantic-Review.md). Browser interaction and physical-device acceptance remain pending.

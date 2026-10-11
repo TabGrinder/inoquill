@@ -1,5 +1,14 @@
 # Changelog
 
+## Second semantic review — 11 October 2026
+
+- Apply C++ escaped-line joining before comments/tokens while retaining physical source lines, including LF, CRLF and CR. Reject ambiguous whitespace after continuation backslashes.
+- Reject text/pointer increments, text arithmetic, array reassignment and nonnumeric conditions instead of using JavaScript coercion.
+- Omit GPIO only after checking both arguments are supported and side-effect-free.
+- Add 19 tests (119 total), expand the independent C++ oracle to 939 profile comparisons, and run 1,000 deterministic malformed-input cases.
+- Update the Wiki and validation records. Keep v1.0.0; browser and physical-device acceptance remain pending.
+
+
 ## Semantic correctness review — 11 October 2026
 
 - Correct unsigned shifts, parenthesized characters, macro precedence and explicit key definitions.

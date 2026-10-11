@@ -465,6 +465,14 @@ export const wikiPages = [
       {
         "type": "p",
         "text": "Object-like macros expand as C++ tokens before parsing. For example, #define N 1 + 2 makes N * 3 evaluate to 7, while #define N (1 + 2) makes it 9. Explicit key definitions override built-in key names. Recursive macro expansion, function macros, and conditional preprocessing require manual adaptation. Expansion is bounded to 32 levels, 50,000 output tokens, and 100,000 token visits."
+      },
+      {
+        "type": "h2",
+        "text": "Operations that need manual adaptation"
+      },
+      {
+        "type": "p",
+        "text": "Text and pointer arithmetic are not evaluated. Incrementing a text pointer, incrementing a String, or reassigning a char array stops conversion with a specific error. Literal text and simple supported text assignment remain available. Conditions in if, while, and for must resolve to numeric or Boolean values; pointer and string truth values are not inferred."
       }
     ]
   },
@@ -686,6 +694,10 @@ export const wikiPages = [
       {
         "type": "p",
         "text": "A hexadecimal escape consumes every following hex digit, as in C++. Use adjacent strings to separate an escape from following digits: \"\\x41\" \"42\" prints A42. Hex escapes outside ASCII are rejected. Arduino Keyboard string writes discard carriage returns; newline still becomes ENTER."
+      },
+      {
+        "type": "p",
+        "text": "A backslash immediately followed by a line ending joins physical lines before comments and tokens are read, as in C++. This also applies inside // comments. Source trace keeps the original physical line numbers. LF, CRLF, and CR line endings are recognized. Whitespace between the backslash and the line ending is rejected because compilers handle that extension differently."
       }
     ]
   },
@@ -762,6 +774,10 @@ export const wikiPages = [
       {
         "type": "note",
         "text": "InoQuill may reject a short-circuit expression if part of it contains a value it cannot determine. It does not implement every C++ evaluation rule. Where appropriate, rewrite the condition using values known at conversion time."
+      },
+      {
+        "type": "p",
+        "text": "GPIO calls are omitted only when both arguments are supported numeric expressions without side effects. A call such as digitalWrite(1, ++x) stops conversion because omitting it would also omit a state change. Move supported state changes into separate statements before the GPIO call."
       }
     ]
   },
