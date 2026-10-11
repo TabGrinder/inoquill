@@ -1,5 +1,12 @@
 # Changelog
 
+## Keyboard report review — 11 October 2026
+
+- Preserve common held keys across DigiKeyboard reports; avoid extra keydowns when repeating a report or stroking an already-held key.
+- Reject text and out-of-range key-code arguments before JavaScript can coerce them into HID codes.
+- Add ten tests, including 1,200 report transitions; 129 tests total. Update the Wiki and validation records.
+- Keep v1.0.0. Browser and physical-device acceptance remain pending.
+
 ## Second semantic review — 11 October 2026
 
 - Apply C++ escaped-line joining before comments/tokens while retaining physical source lines, including LF, CRLF and CR. Reject ambiguous whitespace after continuation backslashes.

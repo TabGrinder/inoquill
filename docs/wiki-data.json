@@ -564,7 +564,7 @@
       },
       {
         "type": "p",
-        "text": "Pressing a key that is already held does not add another HOLD command. releaseAll releases keys in the reverse order they were pressed. If any keys remain held at the end, InoQuill releases them and adds a review notice. Printing text while holding keys is not supported because the result can depend on how the source library handles keyboard reports."
+        "text": "Pressing a key that is already held does not add another HOLD command. releaseAll releases keys in the reverse order they were pressed. If any keys remain held at the end, InoQuill releases them and adds a review notice. Printing text while holding keys is not supported because the result can depend on how the source library handles keyboard reports. DigiKeyboard.sendKeyPress replaces the current report: keys shared by consecutive reports stay held. sendKeyStroke applies that report, then releases it. Key-code arguments must be integers from 0 to 255. Text and buffer overloads of write are not supported; use print for text."
       },
       {
         "type": "h2",

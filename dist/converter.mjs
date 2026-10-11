@@ -444,6 +444,7 @@ function keyName(ts, lib, env) {
     throw new ConversionError('This character key needs manual adaptation: ' + c, ts[0].line);
   }
   const n = evaluate(ts, env);
+  if (!Number.isInteger(n) || n < 0 || n > 255) throw new ConversionError('Key codes must be integers from 0 to 255. Use print() for text; buffer write() overloads require manual adaptation.', ts[0]?.line);
   if (lib === 'Keyboard') {
     if (n >= 128 && n <= 131) return mods[n - 128];
     if (n >= 132 && n <= 135) throw new ConversionError('Right-side modifier is not supported.', ts[0]?.line);
@@ -687,11 +688,14 @@ export function convert(source, options = {}) {
           if (!Number.isInteger(mask) || mask < 0 || mask > 15) throw new ConversionError('Unsupported mask: use left-side modifiers (0–15).', line);
           const combination = mods.filter((_, i) => mask & (1 << i));
           if (key) combination.push(key);
-          if (method === 'sendKeyPress') {
-            releaseAll(line);
+          if (method === 'sendKeyPress' || held.size) {
+            // DigiKeyboard replaces its HID report. Keys present in both
+            // reports stay down; releasing them would create extra keydowns.
+            const next = new Set(combination);
+            for (const k of [...held].reverse()) if (!next.has(k)) release(k, line);
             for (const k of combination) hold(k, line);
+            if (method === 'sendKeyStroke') releaseAll(line);
           } else {
-            releaseAll(line);
             if (combination.length) emit((!key ? 'INJECT_MOD ' : '') + combination.join(' '), line);
           }
           converted++;
