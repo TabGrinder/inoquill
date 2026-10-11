@@ -3,12 +3,19 @@ import {
 } from './targets.mjs';
 // InoQuill: bounded, non-executing parser for a documented Arduino subset.
 export const VERSION = '1.0.0';
-export class ConversionError extends Error {
-  constructor(message, line = 1) {
-    super(message);
-    this.line = line;
-  }
+import {
+  ConversionError
+} from './conversion-error.mjs';
+export {
+  ConversionError
 }
+from './conversion-error.mjs';
+import {
+  evaluate,
+  evaluateTyped,
+  expressionTypes,
+  declarationType
+} from './expressions.mjs';
 export function tokenize(source) {
   if (typeof source !== 'string') throw new ConversionError('Source must be a string.');
   let nesting = 0;
@@ -77,8 +84,9 @@ export function tokenize(source) {
           };
           if (e in map) value += map[e];
           else if (e === 'x') {
-            let h = source.slice(i).match(/^[0-9a-fA-F]{1,2}/);
+            let h = source.slice(i).match(/^[0-9a-fA-F]+/);
             if (!h) throw new ConversionError('Invalid hexadecimal escape.', at);
+            if (BigInt('0x' + h[0]) > 127n) throw new ConversionError('Hexadecimal escape exceeds supported ASCII.', at);
             value += String.fromCharCode(parseInt(h[0], 16));
             i += h[0].length;
           } else throw new ConversionError('Unsupported escape: \\' + e, at);
@@ -92,7 +100,7 @@ export function tokenize(source) {
     }
     let m = source.slice(i).match(/^(?:0[xX][0-9a-fA-F]+|0[bB][01]+|\d+)(?:[uUlL]+)?/);
     if (m) {
-      push(m[0].replace(/[uUlL]+$/, ''), 'number');
+      push(m[0], 'number');
       i += m[0].length;
       continue;
     }
@@ -117,6 +125,49 @@ export function tokenize(source) {
     line
   });
   return tokens;
+}
+// Object-like macros use token substitution, not eager arithmetic evaluation.
+function preprocess(tokens) {
+  const macros = new Map(),
+    output = [];
+  let budget = 0;
+
+  function expand(t, seen = new Set()) {
+    if (++budget > 100000) throw new ConversionError('Macro expansion budget exceeded.', t.line);
+    if (t.type !== 'id' || !macros.has(t.v)) {
+      if (output.length >= 50000) throw new ConversionError('Maximum expanded token count: 50,000.', t.line);
+      output.push(t);
+      return;
+    }
+    if (seen.has(t.v) || seen.size >= 32) throw new ConversionError('Recursive or excessively deep macro expansion: ' + t.v, t.line);
+    const chain = new Set(seen);
+    chain.add(t.v);
+    for (const item of macros.get(t.v)) expand({
+      ...item,
+      line: t.line
+    }, chain);
+  }
+  for (const t of tokens) {
+    if (t.type !== 'directive') {
+      expand(t);
+      continue;
+    }
+    if (/^#\s*include\s*[<"].*[>"](?:\s|\/\/.*)*$/.test(t.v)) continue;
+    const m = t.v.match(/^#\s*define\s+([A-Za-z_]\w*)(\s+)(.+)$/);
+    if (!m) throw new ConversionError('Unsupported preprocessor directive: ' + t.v, t.line);
+    if (macros.has(m[1])) throw new ConversionError('Duplicate macro: ' + m[1], t.line);
+    const replacement = tokenize(m[3]).slice(0, -1);
+    if (!replacement.length || replacement.some(x => x.type === 'directive')) throw new ConversionError('Unsupported macro replacement.', t.line);
+    macros.set(m[1], replacement);
+  }
+  // Macro expansion must respect the same nesting limit as original source.
+  let depth = 0;
+  for (const t of output)
+    if (t.type === 'symbol') {
+      if (['(', '[', '{'].includes(t.v) && ++depth > 64) throw new ConversionError('Maximum expanded syntax nesting: 64.', t.line);
+      if ([')', ']', '}'].includes(t.v)) depth--;
+    }
+  return output;
 }
 const v = t => t?.v;
 const types = new Set(['const', 'static', 'unsigned', 'signed', 'long', 'int', 'byte', 'uint8_t', 'uint16_t', 'uint32_t', 'bool', 'char', 'String', 'void']);
@@ -277,99 +328,6 @@ class Parser {
     };
   }
 }
-const precedence = {
-  '||': 1,
-  '&&': 2,
-  '|': 3,
-  '^': 4,
-  '&': 5,
-  '==': 6,
-  '!=': 6,
-  '<': 7,
-  '>': 7,
-  '<=': 7,
-  '>=': 7,
-  '<<': 8,
-  '>>': 8,
-  '+': 9,
-  '-': 9,
-  '*': 10,
-  '/': 10,
-  '%': 10
-};
-
-function evaluate(ts, env) {
-  let i = 0;
-
-  function atom() {
-    const t = ts[i++];
-    if (!t) throw new ConversionError('Empty expression.');
-    if (t.v === '(') {
-      const a = expr(0);
-      if (v(ts[i++]) !== ')') throw new ConversionError('Incomplete expression.', t.line);
-      return a;
-    }
-    if (['!', '~', '-', '+'].includes(t.v)) {
-      const a = atom();
-      if (typeof a !== 'number') throw new ConversionError('Unary operations require numeric values.', t.line);
-      return t.v === '!' ? Number(!a) : t.v === '~' ? ~a : t.v === '-' ? -a : +a;
-    }
-    if (t.type === 'number') {
-      if (/^0[0-9]+$/.test(t.v)) throw new ConversionError('Use decimal without leading zeros, hex, or binary.', t.line);
-      return Number(t.v);
-    }
-    if (t.type === 'char') return t.v.charCodeAt(0);
-    if (t.type === 'string') {
-      let s = t.v;
-      while (ts[i]?.type === 'string') s += ts[i++].v;
-      return s;
-    }
-    if (t.v === 'F' && v(ts[i]) === '(') {
-      i++;
-      const a = atom();
-      if (v(ts[i++]) !== ')' || typeof a !== 'string') throw new ConversionError('Invalid F() wrapper.', t.line);
-      return a;
-    }
-    if (env.has(t.v)) return env.get(t.v);
-    throw new ConversionError('Cannot resolve value: ' + t.v, t.line);
-  }
-
-  function expr(p) {
-    let a = atom();
-    while (precedence[v(ts[i])] >= p) {
-      const op = ts[i++].v,
-        b = expr(precedence[op] + 1);
-      if (['<<', '>>'].includes(op) && (b < 0 || b > 31)) throw new ConversionError('Shift count must be between 0 and 31.', ts[i - 1]?.line);
-      if (typeof a !== 'number' || typeof b !== 'number') throw new ConversionError('Arithmetic on strings is not supported.', ts[i - 1]?.line);
-      if ((op === '/' || op === '%') && b === 0) throw new ConversionError('Division by zero.');
-      a = ({
-        '||': () => Number(!!a || !!b),
-        '&&': () => Number(!!a && !!b),
-        '|': () => a | b,
-        '^': () => a ^ b,
-        '&': () => a & b,
-        '==': () => Number(a === b),
-        '!=': () => Number(a !== b),
-        '<': () => Number(a < b),
-        '>': () => Number(a > b),
-        '<=': () => Number(a <= b),
-        '>=': () => Number(a >= b),
-        '<<': () => a << b,
-        '>>': () => a >> b,
-        '+': () => a + b,
-        '-': () => a - b,
-        '*': () => a * b,
-        '/': () => Math.trunc(a / b),
-        '%': () => a % b
-      })[op]();
-    }
-    return a;
-  }
-  let result = expr(0);
-  if (i !== ts.length) throw new ConversionError('Unsupported expression: ' + ts.slice(i).map(t => t.v).join(' '), ts[i].line);
-  if (typeof result === 'number' && !Number.isSafeInteger(result)) throw new ConversionError('Number outside the supported range.', ts[0]?.line);
-  return result;
-}
 const named = {
   RETURN: 'ENTER',
   ENTER: 'ENTER',
@@ -439,7 +397,7 @@ const hid = {
 const mods = ['CTRL', 'SHIFT', 'ALT', 'GUI'];
 
 function keyName(ts, lib, env) {
-  if (ts.length === 1 && ts[0].type === 'id' && ts[0].v.startsWith('KEY_')) {
+  if (ts.length === 1 && ts[0].type === 'id' && ts[0].v.startsWith('KEY_') && !env.has(ts[0].v)) {
     const k = ts[0].v.slice(4);
     if (/^(LEFT|RIGHT)_(CTRL|SHIFT|ALT|GUI)$/.test(k)) {
       if (lib !== 'Keyboard') throw new ConversionError('Use a MOD_* mask for DigiKeyboard modifiers.', ts[0].line);
@@ -453,7 +411,8 @@ function keyName(ts, lib, env) {
   }
   if (ts.length === 1 && ts[0].type === 'char' && lib === 'Keyboard') {
     const c = ts[0].v;
-    if (c === '\n' || c === '\r') return 'ENTER';
+    if (c === '\r') throw new ConversionError('Use KEY_RETURN for a return key; ASCII carriage return is not mapped as Enter by the default Keyboard layout.', ts[0].line);
+    if (c === '\n') return 'ENTER';
     if (c === '\t') return 'TAB';
     if (c === ' ') return 'SPACE';
     if (/[a-z0-9]/.test(c)) return c;
@@ -464,7 +423,8 @@ function keyName(ts, lib, env) {
     if (n >= 128 && n <= 131) return mods[n - 128];
     if (n >= 132 && n <= 135) throw new ConversionError('Right-side modifier is not supported.', ts[0]?.line);
     if (n < 128) {
-      if (n === 10 || n === 13) return 'ENTER';
+      if (n === 13) throw new ConversionError('Use KEY_RETURN for a return key; ASCII carriage return is not mapped as Enter by the default Keyboard layout.', ts[0]?.line);
+      if (n === 10) return 'ENTER';
       if (n === 9) return 'TAB';
       if (n === 32) return 'SPACE';
       if (n >= 97 && n <= 122 || n >= 48 && n <= 57) return String.fromCharCode(n);
@@ -523,6 +483,7 @@ export function convert(source, options = {}) {
   };
   const hold = (key, line) => {
     if (!held.has(key)) {
+      if (!mods.includes(key) && [...held].filter(k => !mods.includes(k)).length >= 6) throw new ConversionError('Keyboard supports at most six non-modifier keys held at once.', line);
       if (mods.includes(key)) emit('INJECT_MOD', line);
       emit('HOLD ' + key, line);
       held.add(key);
@@ -551,7 +512,7 @@ export function convert(source, options = {}) {
     env.set('MOD_' + ['CONTROL', 'SHIFT', 'ALT', 'GUI'][i] + '_RIGHT', 1 << (i + 4));
   }
   const protectedGlobals = new WeakMap();
-  const bindingTypes = new WeakMap();
+  const bindingTypes = expressionTypes;
   const constants = new WeakMap();
   const ranges = new WeakMap();
   let program;
@@ -583,7 +544,7 @@ export function convert(source, options = {}) {
     if (opts.target !== '3.0' && opts.loop === 'repeat') throw new ConversionError('Continuous repetition requires DuckyScript 3.0. Choose one iteration or setup only.');
     if (typeof opts.comments !== 'boolean') throw new ConversionError('comments must be a boolean.');
     if (!['once', 'repeat', 'setup'].includes(opts.loop)) throw new ConversionError('Invalid loop mode.');
-    program = new Parser(tokenize(source)).program();
+    program = new Parser(preprocess(tokenize(source))).program();
     for (const name of ['setup', 'loop']) {
       const f = program.functions.get(name);
       if (f && f.params.length && f.params.map(t => t.v).join('') !== 'void') throw new ConversionError(name + ' must not have parameters.', f.line);
@@ -649,7 +610,6 @@ export function convert(source, options = {}) {
       }
       if (['DigiKeyboard.update', 'Keyboard.begin', 'Keyboard.end'].includes(name)) {
         count(0);
-        if (name === 'Keyboard.end') releaseAll(line);
         report('info', name + ' configures source-device USB state; it produces no keystroke.', line);
         return;
       }
@@ -670,9 +630,12 @@ export function convert(source, options = {}) {
             return;
           }
           count(1);
-          const val = ev(0);
-          const isChar = args[0].length === 1 && (args[0][0].type === 'char' || getTypes(scope).get(args[0][0].v) === 'char');
-          textOutput(isChar ? String.fromCharCode(val) : String(val), line);
+          const typed = evaluateTyped(args[0], scope);
+          const val = typed.value;
+          const isChar = typed.kind === 'char';
+          if (lib === 'Keyboard' && isChar && val === 13) throw new ConversionError('A carriage-return character needs manual adaptation; use KEY_RETURN for Enter.', line);
+          const text = isChar ? String.fromCharCode(val) : String(val);
+          textOutput(lib === 'Keyboard' && typed.kind === 'string' ? text.replaceAll('\r', '') : text, line);
           if (method === 'println') emit('ENTER', line);
           converted++;
           return;
@@ -731,7 +694,7 @@ export function convert(source, options = {}) {
         ps.forEach((p, i) => {
           if (p.some(t => ['*', '&', '[', ']', '='].includes(t.v))) throw new ConversionError('Complex function parameters are not supported.', line);
           local.set(p.at(-1).v, ev(i));
-          getTypes(local).set(p.at(-1).v, p.some(t => t.v === 'char') ? 'char' : 'number');
+          getTypes(local).set(p.at(-1).v, declarationType(p.slice(0, -1).map(t => t.v)));
           getRanges(local).set(p.at(-1).v, bounds(p.map(t => t.v)));
           validateValue(local, p.at(-1).v, line);
           protectedNames.delete(p.at(-1).v);
@@ -756,6 +719,8 @@ export function convert(source, options = {}) {
         if (v(rest[k]) === '[' && v(rest[k + 1]) === ']') k += 2;
         if (!name || v(rest[k]) !== '=') throw new ConversionError('Only initialized variables and string arrays are supported.', line);
         const declaration = ts.slice(0, j).map(t => t.v);
+        declarationType(declaration);
+        if (k > 1 && !declaration.includes('char')) throw new ConversionError('Only literal char arrays are supported.', line);
         if (scope.has(name)) throw new ConversionError('Variable shadowing or redeclaration needs manual adaptation: ' + name, line);
         if (declaration.includes('static')) throw new ConversionError('Static local state needs manual adaptation.', line);
         if (declaration.includes('void')) throw new ConversionError('A variable cannot have type void.', line);
@@ -768,7 +733,9 @@ export function convert(source, options = {}) {
         if (declaration.includes('char') && k > 1 && typeof val !== 'string') throw new ConversionError('String arrays need literal text.', line);
         if (kind === 'char' && (typeof val !== 'number' || val < 0 || val > 127)) throw new ConversionError('char values must be ASCII.', line);
         scope.set(name, val);
-        getTypes(scope).set(name, kind);
+        getTypes(scope).set(name, kind === 'string' ? {
+          kind: 'string'
+        } : declarationType(declaration));
         if (kind !== 'string') {
           getRanges(scope).set(name, bounds(declaration));
           validateValue(scope, name, line);
@@ -788,6 +755,7 @@ export function convert(source, options = {}) {
           scope.set(name, scope.get(name) + (op === '++' ? 1 : -1));
         } else {
           const b = evaluate(ts.slice(2), scope);
+          if (getTypes(scope).get(name)?.kind === 'string' && (typeof b !== 'string' || op !== '=')) throw new ConversionError('String reassignment requires literal text and =.', line);
           scope.set(name, op === '=' ? b : op === '+=' ? scope.get(name) + b : scope.get(name) - b);
         }
         validateValue(scope, name, line);
@@ -797,25 +765,21 @@ export function convert(source, options = {}) {
       call(ts, line, scope, depth);
     }
 
+    function runScoped(node, scope, depth) {
+      return run(node.kind === 'block' ? node : {
+        kind: 'block',
+        body: [node],
+        line: node.line
+      }, scope, depth);
+    }
+
     function run(node, scope, depth = 0) {
       if (++steps > 5000) throw new ConversionError('5,000-step limit: excessive or infinite loop.', node.line);
       switch (node.kind) {
         case 'empty':
           return;
-        case 'directive': {
-          const d = node.token.v;
-          if (/^#\s*include\s*[<"].*[>"]\s*$/.test(d)) return;
-          const m = d.match(/^#\s*define\s+([A-Za-z_]\w*)\s+(.+)$/);
-          if (!m) throw new ConversionError('Unsupported preprocessor directive: ' + d, node.line);
-          if (scope.has(m[1])) throw new ConversionError('Duplicate macro or reserved name: ' + m[1], node.line);
-          scope.set(m[1], evaluate(tokenize(m[2]).slice(0, -1), scope));
-          getConst(scope).add(m[1]);
-          return;
-        }
         case 'block': {
-          const before = new Map(scope),
-            beforeTypes = new Map(getTypes(scope)),
-            beforeConst = new Set(getConst(scope));
+          const before = new Map(scope);
           for (const n of node.body) {
             const r = run(n, scope, depth);
             if (r) {
@@ -833,13 +797,7 @@ export function convert(source, options = {}) {
                 getTypes(scope).delete(key);
                 getConst(scope).delete(key);
                 getRanges(scope).delete(key);
-              } for (const [key, value] of before) {
-              if (node.body.some(n => n.kind === 'simple' && types.has(v(n.expr[0])) && n.expr.some(t => t.v === key))) {
-                scope.set(key, value);
-                if (beforeTypes.has(key)) getTypes(scope).set(key, beforeTypes.get(key));
-                if (beforeConst.has(key)) getConst(scope).add(key);
               }
-            }
           }
         }
         case 'simple':
@@ -849,9 +807,10 @@ export function convert(source, options = {}) {
           if (node.expr.length) throw new ConversionError('Return values are not supported.', node.line);
           return 'return';
         case 'break':
+          if (node.expr.length) throw new ConversionError('break does not take an expression.', node.line);
           return 'break';
         case 'if':
-          return run(evaluate(node.expr, scope) ? node.body : node.alternate ?? {
+          return runScoped(evaluate(node.expr, scope) ? node.body : node.alternate ?? {
             kind: 'empty',
             line: node.line
           }, scope, depth);
@@ -863,7 +822,7 @@ export function convert(source, options = {}) {
           let iterations = 0;
           while (evaluate(p[1], scope)) {
             if (++iterations > 1000) throw new ConversionError('Maximum 1,000 iterations per loop.', node.line);
-            const r = run(node.body, scope, depth);
+            const r = runScoped(node.body, scope, depth);
             if (r === 'return') return r;
             if (r === 'break') break;
             simple(p[2], node.line, scope, depth);
@@ -884,7 +843,7 @@ export function convert(source, options = {}) {
           let iterations = 0;
           while (evaluate(node.expr, scope)) {
             if (++iterations > 1000) throw new ConversionError('An unbounded while loop requires manual adaptation.', node.line);
-            const r = run(node.body, scope, depth);
+            const r = runScoped(node.body, scope, depth);
             if (r === 'return') return r;
             if (r === 'break') break;
           }

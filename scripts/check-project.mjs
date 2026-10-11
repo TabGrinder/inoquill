@@ -6,7 +6,7 @@ const html = await readFile('dist/index.html','utf8');
 const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(m=>m[1]); assert.equal(new Set(ids).size,ids.length,'Duplicate HTML IDs');
 for(const match of html.matchAll(/(?:src|href)="([^"]+)"/g)){const url=match[1];if(url.startsWith('#')||url.startsWith('https://')||url.startsWith('data:'))continue;await access(path.join('dist',url));}
 assert.match(html,/<html lang="en">/);assert.ok(!html.includes('→'),'Use to instead of the arrow');assert.match(html,/For educational purposes only/);assert.match(html,/TabGrinder/);
-for(const file of ['dist/app.mjs','dist/converter.mjs','dist/targets.mjs','dist/worker.mjs','dist/wiki.mjs','dist/wiki-data.mjs','dist/workbench-utils.mjs','server.mjs','cli.mjs','cli-input.mjs'])execFileSync(process.execPath,['--check',file]);
+for(const file of ['dist/app.mjs','dist/converter.mjs','dist/expressions.mjs','dist/conversion-error.mjs','dist/targets.mjs','dist/worker.mjs','dist/wiki.mjs','dist/wiki-data.mjs','dist/workbench-utils.mjs','server.mjs','cli.mjs','cli-input.mjs'])execFileSync(process.execPath,['--check',file]);
 for(const file of ['dist/app.mjs','dist/wiki.mjs']){const source=await readFile(file,'utf8');assert.ok(!/innerHTML|outerHTML|insertAdjacentHTML|document\.write\(/.test(source),'Unsafe HTML sink: '+file);}
 assert.ok(!html.includes('Everything in one repository'));
 for(const id of ['output-target','device-target','target-hint','device-hint'])assert.ok(ids.includes(id));

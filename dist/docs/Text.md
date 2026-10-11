@@ -12,7 +12,7 @@ InoQuill reads the supported C++ string first, then writes the corresponding Duc
 | Leading or trailing spaces | One SPACE per space |
 | Internal spaces | Remain inside STRING |
 | \t | TAB |
-| \n or \r | ENTER |
+| \n or \r | ENTER for newline; Keyboard string writes discard carriage returns |
 | \r\n | One ENTER |
 | println() | An additional ENTER after the supplied text |
 | \\ and escaped quotes | Literal backslash or quote |
@@ -40,4 +40,6 @@ SPACE
 - Numbers passed to print are written in decimal. Additional formatting arguments, such as HEX or a precision value, are not supported in v1.0.
 
 Use printable, harmless text in examples and reports. Reports may contain translated strings, so remove personal data before sharing them.
+
+A hexadecimal escape consumes every following hex digit, as in C++. Use adjacent strings to separate an escape from following digits: "\x41" "42" prints A42. Hex escapes outside ASCII are rejected. Arduino Keyboard string writes discard carriage returns; newline still becomes ENTER.
 

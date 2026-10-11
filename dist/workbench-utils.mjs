@@ -50,5 +50,5 @@ export function bugReportTemplate({ version, options, browser }) {
     '## What happened?\n\nDescribe what you expected and what happened instead.\n\n' +
     '## Steps to reproduce\n\n1. \n\n## Device and environment\n\nDevice / firmware:\nKeyboard layout:\nOperating system:\n\n' +
     '## Small example (optional)\n\nAdd a harmless, redacted sketch if needed. No sketch or output was attached automatically.\n' +
-    '\nReview this file before sharing. Remove private information. Report security vulnerabilities privately using SECURITY.md.\n';
+    '\nIssue form: https://github.com/TabGrinder/inoquill/issues/new?template=bug_report.yml\n\nReview this file before sharing. Remove private information. Report security vulnerabilities privately using SECURITY.md.\n';
 }

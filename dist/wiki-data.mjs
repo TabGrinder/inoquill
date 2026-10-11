@@ -345,7 +345,7 @@ export const wikiPages = [
           [
             "Keyboard.begin / end; DigiKeyboard.update",
             "No equivalent device initialization command",
-            "end releases tracked keys; no USB emulation"
+            "end does not release held keys; no USB emulation"
           ],
           [
             "pinMode / digitalWrite",
@@ -354,8 +354,8 @@ export const wikiPages = [
           ],
           [
             "Object #define and initialized variables",
-            "Constant evaluation",
-            "No function macros or conditional preprocessing"
+            "Textual macro expansion; typed constant evaluation",
+            "Object-like macros only; no conditional preprocessing"
           ],
           [
             "if; bounded for / while",
@@ -380,7 +380,7 @@ export const wikiPages = [
       },
       {
         "type": "p",
-        "text": "You can use decimal, hexadecimal, and binary integers; initialized integer variables; ASCII characters; literal string arrays and pointers; and Arduino String values within the listed limits. InoQuill also recognizes F(\"text\") and adjacent string literals. Expressions can use integer arithmetic, comparisons, and Boolean and bitwise operators. If a value overflows its supported type, conversion stops with an error."
+        "text": "Integer expressions use an AVR model: 16-bit int and 32-bit long, with signedness, integer promotions, and U/L literal suffixes preserved. Unsigned arithmetic wraps at its promoted width; signed overflow and out-of-range assignments are rejected. This is not a cross-board C++ compiler. Parentheses preserve char values when printing; arithmetic promotes them to numbers. Literal strings, adjacent strings, and F(\"text\") are supported. Long-long declarations and suffixes are not supported; larger unsuffixed literals can be used only while values remain exactly representable."
       },
       {
         "type": "h2",
@@ -457,6 +457,14 @@ export const wikiPages = [
             "href": "#wiki/Diagnostics"
           }
         ]
+      },
+      {
+        "type": "h2",
+        "text": "Macros and source types"
+      },
+      {
+        "type": "p",
+        "text": "Object-like macros expand as C++ tokens before parsing. For example, #define N 1 + 2 makes N * 3 evaluate to 7, while #define N (1 + 2) makes it 9. Explicit key definitions override built-in key names. Recursive macro expansion, function macros, and conditional preprocessing require manual adaptation. Expansion is bounded to 32 levels, 50,000 output tokens, and 100,000 token visits."
       }
     ]
   },
@@ -582,6 +590,10 @@ export const wikiPages = [
       {
         "type": "p",
         "text": "Choose Check keyboard punctuation from Try an example. Convert it for your device, then use the device’s normal compilation or loading process. Open a blank text editor on a computer you own and compare the typed text with the example. Check symbols such as @, brackets, slashes, and question marks. This is a manual check of the keyboard layout; InoQuill does not remap layouts or verify the typed result."
+      },
+      {
+        "type": "p",
+        "text": "Keyboard.end() does not release keys in the Arduino Keyboard library. Use releaseAll() explicitly. More than six simultaneous non-modifier keys are rejected because the source Keyboard report cannot represent them. Automatic releases added at the end of a translation are still reported."
       }
     ]
   },
@@ -620,7 +632,7 @@ export const wikiPages = [
           ],
           [
             "\\n or \\r",
-            "ENTER"
+            "ENTER for newline; Keyboard string writes discard carriage returns"
           ],
           [
             "\\r\\n",
@@ -670,6 +682,10 @@ export const wikiPages = [
       {
         "type": "p",
         "text": "Use printable, harmless text in examples and reports. Reports may contain translated strings, so remove personal data before sharing them."
+      },
+      {
+        "type": "p",
+        "text": "A hexadecimal escape consumes every following hex digit, as in C++. Use adjacent strings to separate an escape from following digits: \"\\x41\" \"42\" prints A42. Hex escapes outside ASCII are rejected. Arduino Keyboard string writes discard carriage returns; newline still becomes ENTER."
       }
     ]
   },
@@ -848,11 +864,20 @@ export const wikiPages = [
       },
       {
         "type": "p",
-        "text": "Select Prepare bug report to download a Markdown template with the version, browser information, and current conversion settings. It does not attach your sketch, output, or diagnostics, and it sends nothing automatically. Add the steps to reproduce the problem, your device and firmware, the keyboard layout, and what you expected. Review the file before sharing it with the maintainer."
+        "text": "Select Prepare bug report to download a Markdown template with the version, browser information, and current conversion settings. It does not attach your sketch, output, or diagnostics, and it sends nothing automatically. Add the steps to reproduce the problem, your device and firmware, the keyboard layout, and what you expected. Review the file before sharing it with the maintainer. Select Report an issue on GitHub to open the public issue form. Nothing is submitted automatically."
       },
       {
         "type": "note",
         "text": "Download report is different: it contains the conversion result and may include text from your sketch. Remove private information before sharing it."
+      },
+      {
+        "type": "links",
+        "items": [
+          {
+            "label": "Report an issue on GitHub",
+            "href": "https://github.com/TabGrinder/inoquill/issues/new?template=bug_report.yml"
+          }
+        ]
       }
     ]
   },

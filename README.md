@@ -4,7 +4,7 @@
 
 Translate known keyboard sequences locally. Inspect source-line mappings, review deliberate adaptations, and choose a destination device and export source for its supported language profile.
 
-Use the [web app](https://inoquill-tabgrinder.softlotus5.chatgpt.site/) to try an example without installing anything.
+Use the [web app](https://tabgrinder.github.io/inoquill/) to try an example without installing anything.
 
 **For educational purposes only.** Use only on systems you own or are explicitly authorized to assess. Read the [full disclaimer](DISCLAIMER.md). A successful translation is not a safety verdict or a guarantee of compiler/device compatibility.
 
@@ -19,7 +19,6 @@ Duckify and Duckuino convert DuckyScript to Arduino. InoQuill explores the rever
 Node.js 20 or later. No packages to install.
 
 ```sh
-npm test
 npm start
 ```
 
@@ -99,6 +98,8 @@ Long waits are split into commands of at most 65,535 ms (10,000 ms for the 2.0 p
 
 ## Development
 
+Tests require Node.js 20+ and `g++` (C++17) for the independent expression oracle. The browser app and CLI do not need a C++ compiler. `npm test` intentionally fails if the oracle compiler is missing.
+
 ```sh
 npm run docs   # regenerate web and GitHub wiki content
 npm run check  # tests plus asset/docs/source checks
@@ -125,13 +126,15 @@ server.mjs             static local server
 
 InoQuill is a subset translator, not a C++ compiler or Arduino emulator. Dynamic sensors, Serial, Mouse, complex types, variable shadowing, static local state, function macros, non-ASCII text and right-side modifiers are outside this release. Unsupported behavior blocks export. GPIO is omitted with a notice.
 
-Integer handling uses documented AVR-style ranges and rejects supported-type overflow; it is not a cross-board C++ ABI implementation. Source timing, USB transport, keyboard layout and host focus still require review. See the matrix before relying on a translation.
+Integer handling models AVR 16-bit int and 32-bit long promotions. Unsigned arithmetic wraps at its promoted width; signed overflow and out-of-range assignments are rejected. Macros use token substitution. This is not a cross-board C++ ABI implementation. Source timing, USB transport, keyboard layout and host focus still require review. See the matrix before relying on a translation.
 
 Automated tests cover engine behavior, malformed input, server boundaries and release artifacts. This release has not undergone independent security assessment, interactive visual browser QA, PayloadStudio compilation or physical Rubber Ducky verification. Header enforcement depends on the final host. No claim of zero vulnerabilities is made.
 
 ## Publish under TabGrinder
 
-Suggested repository: `TabGrinder/inoquill`. A public repository allows visitors to download, clone and fork the code, even though the web UI has no project download button. The source package excludes hosting identity and Git metadata. It includes MIT licensing, English user guides, developer documentation, security and contribution policies, templates and CI. Create the repository and its wiki, then follow [GitHub preparation](docs/GitHub.md). The included Pages workflow is manual; pushing source does not automatically deploy publicly. No GitHub repository was created by this project preparation.
+Source: [TabGrinder/inoquill](https://github.com/TabGrinder/inoquill). The public app is hosted at [GitHub Pages](https://tabgrinder.github.io/inoquill/). The Pages workflow checks and deploys updates to `main`; it can also be started manually. Public source can be downloaded, cloned, and forked. The embedded Wiki ships with the app; GitHub's separate Wiki requires separate initialization.
+
+Report reproducible problems using [the issue form](https://github.com/TabGrinder/inoquill/issues/new?template=bug_report.yml). Prepare bug report downloads local settings without your sketch. Review attachments before posting. See [current validation evidence](docs/Community-Validation.md) and [device acceptance steps](docs/Device-Acceptance.md).
 
 ## Credits and licensing
 
@@ -167,7 +170,7 @@ The public website serves dist/ only. Project ZIP archives and checksums are bui
 
 InoQuill combines `.ino`, the Arduino sketch extension, with “quill”, a writing pen: translating sketches into scripts. This is the project’s name, not a claim of exclusive trademark rights.
 
-See [publication readiness](docs/Publication-Readiness.md) for the license, public-source implications, current evidence and final-host checks. The planned Pages URL is not a live-site claim.
+See [publication readiness](docs/Publication-Readiness.md) for the license, public-source implications, current evidence and final-host checks. GitHub Pages availability has been checked; browser interaction and hardware acceptance are tracked separately.
 
 ## Validation record
 

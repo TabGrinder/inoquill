@@ -2,45 +2,38 @@
 
 InoQuill v1.0.0 · 11 October 2026
 
-This record separates automated evidence from checks that need a browser, compiler, or physical device. It is not an independent audit or a claim of universal compatibility.
+This is a developer-run validation record, not an independent audit or a certification of device compatibility. Version 1.0.0 remains the release label requested by the maintainer; use the Git commit to identify the exact implementation.
 
-## Changes informed by the comparison
+## Reproduced and corrected
 
-Duckify's compact destination controls and script naming informed the simplified setup and editable download name. Duckuino's direct copy/download workflow and modular source informed the emphasis on export preparation and maintainable code. Existing InoQuill source trace, review notices, local processing, and conversion limits remain in place. No source or visual assets from either project were copied.
+The original implementation failed all 12 new regression cases: four semantic bugs tested against three output profiles. The fixes preserve unsigned right shifts, parenthesized char printing, textual macro precedence, and explicit key definitions.
 
-References: https://duckify.spacehuhn.com/ · https://github.com/SpacehuhnTech/duckify · https://dukweeno.github.io/Duckuino/ · https://github.com/Dukweeno/Duckuino
+Additional regression checks cover AVR integer promotions and suffixes, signed overflow, unsigned wrapping, macro aliases and recursive expansion, full-length hex escapes, helper parameter types, block and unbraced-statement scope, invalid declarations, Keyboard.end behavior, six-key rollover limits, carriage returns in Keyboard string writes, and immediate invalidation when editing startup delay.
 
-## Automated checks
+## Automated evidence
 
-Validation run: 74 tests passed, with no failures or skipped tests. `npm run check` and `npm run build` completed successfully. HTML structure and release labels were checked separately. Current command output remains the authoritative test count for future changes.
+`npm run check`: 100 tests passed, none failed or skipped. The test suite includes an independent C++17 compiler oracle: 57 expressions, checked against all three output profiles (171 comparisons). It uses fixed-width 32-bit values and other ABI-independent examples. AVR-specific 16-bit promotion rules have explicit regression assertions; a native desktop compiler does not independently validate the AVR ABI.
 
-- Regression coverage for the three DuckyScript profiles and all device presets.
-- Keyboard-punctuation example converted for every preset with source tracing and a three-second startup delay.
-- Undo history bounds, snapshot isolation, restore order, original filename, and custom export name.
-- Safe output names, path removal, Windows reserved names, and version-specific extensions.
-- Successful-result-only downloads and report templates that exclude sketch/output text.
-- Existing malformed-input, bounded-processing, import-race, stale-copy, server-boundary, and documentation checks.
-- Repository-subpath resource checks and generated user guides.
-- Converter formatting checked against the previous implementation across 126 example, device, and loop-mode combinations.
+The oracle compiles and executes only source written inside the test fixture, never uploaded sketches. Tests require g++; the browser and CLI do not. Existing tests also check UTF-8 import handling, race conditions, clipboard fallback, failed-export controls, Wiki routing, safe rendering, CLI boundaries and local-server access. DOM simulations are not real-browser tests.
 
-## Direct verification matrix
+## Publication and interaction
+
+The public repository is https://github.com/TabGrinder/inoquill and the Pages URL is https://tabgrinder.github.io/inoquill/. The published site returned HTTP 200 and its nine main resources matched the uploaded source during the initial deployment check. Updated deployment state must be checked after each release.
 
 | Environment | Status | Acceptance criteria |
 | --- | --- | --- |
-| Chrome / Edge desktop | Pending | Import, paste, convert, Undo, name export, copy, download, report, theme and keyboard navigation |
-| Firefox desktop | Pending | Same workflow; module worker and clipboard fallback |
-| Safari desktop | Pending | Same workflow; module worker, Blob download and focus behavior |
-| Mobile Chrome / Safari | Pending | Readable controls, no unintended horizontal page scrolling, native file picker and download |
-| USB Rubber Ducky (2022) | Pending | PayloadStudio compilation, selected layout, harmless greeting and punctuation check |
-| Classic USB Rubber Ducky | Pending | Compatible encoder and the same harmless checks |
-| Flipper Zero | Pending | Load text through BadUSB; verify layout and timing |
-| Bash Bunny / Key Croc | Pending | Prepare device payload and triggers; verify QUACK output on authorized hardware |
-| GitHub Pages final URL | Pending | Publication has not occurred; verify worker, Wiki, links and downloads under /inoquill/ |
+| Node engine and regression suite | Passed | Current `npm run check` output is authoritative |
+| Native C++ expression oracle | Passed | 57 expressions across three output profiles |
+| Chrome / Edge desktop | Pending | Import, paste, convert, Undo, copy, download, report, theme, keyboard navigation and Wiki |
+| Firefox / Safari desktop | Pending | Same workflow; module workers, clipboard fallback and Blob downloads |
+| Mobile Chrome / Safari | Pending | Readable controls, native file picker, downloads and no unintended horizontal scrolling |
+| Destination compilation | Pending | Compile the generated source with the supported firmware's tools |
+| USB Rubber Ducky classic / 2022 | Pending | Greeting, numbers, punctuation, timing and release behavior on hardware |
+| Flipper Zero | Pending | Load the generated text through BadUSB and compare typed output |
+| Bash Bunny / Key Croc | Pending | Configure HID/triggers and verify the correct QUACK format on hardware |
 
-Browser automation was unavailable in this session. No interactive browser or physical-device result is implied by passing the automated checks. Site deployment is verified separately through the hosting service.
+The required browser-control plugin was unavailable, and no USB devices were connected to the test environment. Browser or physical-device success must not be inferred from automated tests. Follow [Device acceptance](Device-Acceptance.md) and record firmware, layout, compiler and commit with each result.
 
-## Useful community feedback
+## Reporting problems
 
-Record the InoQuill version, browser version, device and firmware, keyboard layout, conversion settings, expected result, and actual result. Use Prepare bug report for a local template. Review every attachment before sharing it. The existing JSON conversion report may contain translated source text.
-
-Public GitHub issue tracking is not configured in this build. No inactive issue link is included in the interface. Reports can be shared with the maintainer through the community channel used to distribute the app.
+Use the Workbench's **Report an issue on GitHub** link or https://github.com/TabGrinder/inoquill/issues/new?template=bug_report.yml. **Prepare bug report** downloads a local template with browser and conversion settings. It does not submit anything or attach code. The JSON conversion report can contain translated strings; redact it before posting. Report security vulnerabilities using SECURITY.md, not public issue details.

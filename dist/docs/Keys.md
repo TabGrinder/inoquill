@@ -62,3 +62,5 @@ Use the keyboard layout configured on the computer that will receive the keystro
 
 Choose Check keyboard punctuation from Try an example. Convert it for your device, then use the device’s normal compilation or loading process. Open a blank text editor on a computer you own and compare the typed text with the example. Check symbols such as @, brackets, slashes, and question marks. This is a manual check of the keyboard layout; InoQuill does not remap layouts or verify the typed result.
 
+Keyboard.end() does not release keys in the Arduino Keyboard library. Use releaseAll() explicitly. More than six simultaneous non-modifier keys are rejected because the source Keyboard report cannot represent them. Automatic releases added at the end of a translation are still reported.
+

@@ -47,3 +47,18 @@ test('browser import rejects malformed UTF-8 instead of silently replacing bytes
  await assert.rejects(readImportedSketch(new Blob([new Uint8Array([0xff,0xfe])])),/valid UTF-8/);
  await assert.rejects(readImportedSketch(new Blob(['x'.repeat(200001)])),/200 KB/);
 });
+test('startup delay edits invalidate output immediately, before blur',async()=>{
+ const source=await readFile('dist/app.mjs','utf8');const handlers={};let invalidations=0;
+ const context={$:id=>({addEventListener:(event,fn)=>{handlers[id+':'+event]=fn;}}),invalidate:()=>invalidations++};
+ const start=source.indexOf("for (const id of ['loop-mode', 'comments'])"),end=source.indexOf('for (const [input, lineNumbers]',start);
+ vm.runInNewContext(source.slice(start,end),context);
+ handlers['initial-delay:input']();assert.equal(invalidations,1);
+});
+test('empty or invalid startup delay cannot create a conversion worker',async()=>{
+ const source=await readFile('dist/app.mjs','utf8');
+ for(const value of ['', '-1','1.5','4294967296']){
+  let failure='';const context={worker:null,$:id=>({value:id==='input'?'void setup(){}':value}),failConversion:m=>failure=m};
+  vm.runInNewContext(source.slice(source.indexOf('function run()'),source.indexOf('function save(')).replace('import.meta.url','"https://example.invalid/app.mjs"'),context);
+  context.run();assert.match(failure,/whole startup delay/);
+ }
+});

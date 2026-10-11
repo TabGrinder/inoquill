@@ -4,7 +4,7 @@ InoQuill v1.0.0, maintained by TabGrinder.
 
 ## Public source and licensing
 
-The planned repository is `TabGrinder/inoquill`, with GitHub Pages at `https://tabgrinder.github.io/inoquill/`. These are planned locations, not confirmation of publication.
+The public repository is `TabGrinder/inoquill`. GitHub Pages at `https://tabgrinder.github.io/inoquill/` responded with HTTP 200 on 11 October 2026. This verifies availability, not browser interaction or hardware behavior.
 
 A public repository lets anyone view, download, clone and fork its contents. The web interface has no project download button, but browser-delivered HTML, CSS and JavaScript remain accessible. Do not publish secrets, private sketches or hosting credentials.
 
@@ -31,4 +31,4 @@ Record results against the actual Pages URL after deployment. These checks are p
 - Verify actual response headers. GitHub Pages does not enforce the `_headers` template. The HTML CSP cannot supply response-level frame protection.
 - Compile source using the appropriate destination tooling, then test on authorized hardware with the intended keyboard layout, startup delay and focused text editor.
 
-The Pages workflow is manual. Enable GitHub Actions as the Pages source, run the workflow, inspect its result and complete this acceptance record before describing deployment as verified.
+The Pages workflow runs on pushes to main and can also be started manually. Inspect its result and complete the browser/device acceptance record before claiming those checks passed.

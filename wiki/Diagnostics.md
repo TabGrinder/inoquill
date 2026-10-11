@@ -36,7 +36,9 @@ Errors appear first, followed by review notices and other information. Select th
 
 ## Prepare a bug report
 
-Select Prepare bug report to download a Markdown template with the version, browser information, and current conversion settings. It does not attach your sketch, output, or diagnostics, and it sends nothing automatically. Add the steps to reproduce the problem, your device and firmware, the keyboard layout, and what you expected. Review the file before sharing it with the maintainer.
+Select Prepare bug report to download a Markdown template with the version, browser information, and current conversion settings. It does not attach your sketch, output, or diagnostics, and it sends nothing automatically. Add the steps to reproduce the problem, your device and firmware, the keyboard layout, and what you expected. Review the file before sharing it with the maintainer. Select Report an issue on GitHub to open the public issue form. Nothing is submitted automatically.
 
 > Download report is different: it contains the conversion result and may include text from your sketch. Remove private information before sharing it.
+
+- [Report an issue on GitHub](https://github.com/TabGrinder/inoquill/issues/new?template=bug_report.yml)
 

@@ -14,16 +14,16 @@ Check which parts of your sketch can be translated and where changes may be need
 | Keyboard.press / release / releaseAll | 3.0: explicit held-key state; portable targets: immediate tap/shortcut only | Right-side modifiers are not supported |
 | Keyboard.write | Press and release a supported key | Review the Keys page for ASCII constraints |
 | delay / DigiKeyboard.delay | DELAY with a resolved value | 0 is omitted; 3.0 minimum 20 ms; long waits split without changing the total |
-| Keyboard.begin / end; DigiKeyboard.update | No equivalent device initialization command | end releases tracked keys; no USB emulation |
+| Keyboard.begin / end; DigiKeyboard.update | No equivalent device initialization command | end does not release held keys; no USB emulation |
 | pinMode / digitalWrite | Omitted with a notice | Confirm GPIO is not essential |
-| Object #define and initialized variables | Constant evaluation | No function macros or conditional preprocessing |
+| Object #define and initialized variables | Textual macro expansion; typed constant evaluation | Object-like macros only; no conditional preprocessing |
 | if; bounded for / while | Evaluate and expand locally | No host or sensor state |
 | Simple void helpers | Expand calls with value parameters | No mutation of inherited state |
 | loop() | Once, continuously, or excluded | Continuous mode rejects evolving global state |
 
 ## Values and expressions
 
-You can use decimal, hexadecimal, and binary integers; initialized integer variables; ASCII characters; literal string arrays and pointers; and Arduino String values within the listed limits. InoQuill also recognizes F("text") and adjacent string literals. Expressions can use integer arithmetic, comparisons, and Boolean and bitwise operators. If a value overflows its supported type, conversion stops with an error.
+Integer expressions use an AVR model: 16-bit int and 32-bit long, with signedness, integer promotions, and U/L literal suffixes preserved. Unsigned arithmetic wraps at its promoted width; signed overflow and out-of-range assignments are rejected. This is not a cross-board C++ compiler. Parentheses preserve char values when printing; arithmetic promotes them to numbers. Literal strings, adjacent strings, and F("text") are supported. Long-long declarations and suffixes are not supported; larger unsuffixed literals can be used only while values remain exactly representable.
 
 ## What is not supported
 
@@ -49,4 +49,8 @@ You can use decimal, hexadecimal, and binary integers; initialized integer varia
 
 - [Control flow](Control-Flow)
 - [Troubleshooting](Diagnostics)
+
+## Macros and source types
+
+Object-like macros expand as C++ tokens before parsing. For example, #define N 1 + 2 makes N * 3 evaluate to 7, while #define N (1 + 2) makes it 9. Explicit key definitions override built-in key names. Recursive macro expansion, function macros, and conditional preprocessing require manual adaptation. Expansion is bounded to 32 levels, 50,000 output tokens, and 100,000 token visits.
 

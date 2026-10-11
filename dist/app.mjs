@@ -77,7 +77,7 @@ function showResult(next) {
   const errors = next.diagnostics.filter(d => d.severity === 'error');
   $('result-banner').hidden = false;
   $('result-banner').className = 'result-banner ' + (next.ok ? 'success' : 'error');
-  $('result-banner-text').textContent = next.ok ? 'Conversion complete. Review the output before loading it onto your device.' : errors.length + ' blocking error' + (errors.length === 1 ? '' : 's') + '. Line ' + errors[0].line + ': ' + errors[0].message;
+  $('result-banner-text').textContent = next.ok ? 'Translation ready for review. Check the notices and test it on your device; conversion does not verify device behavior.' : errors.length + ' blocking error' + (errors.length === 1 ? '' : 's') + '. Line ' + errors[0].line + ': ' + errors[0].message;
   $('result-help').href = next.ok ? '#wiki/Output-Targets' : '#wiki/Diagnostics';
   $('result-help').textContent = next.ok ? 'Device instructions' : 'Troubleshooting guide';
   const warnings = next.diagnostics.filter(d => d.severity === 'warning').length;
@@ -118,11 +118,14 @@ function run() {
   const source = $('input').value;
   if (!source.trim()) { invalidate(); toast('Paste your code, import a file, or choose an example first.'); return; }
   if (source.length > 200000) { invalidate(); toast('This sketch is too long. Use 200,000 characters or fewer.'); return; }
+  const initialDelayText = $('initial-delay').value.trim();
+  const initialDelay = Number(initialDelayText);
+  if (!initialDelayText || !Number.isInteger(initialDelay) || initialDelay < 0 || initialDelay > 4294967295) { failConversion('Enter a whole startup delay from 0 to 4,294,967,295 milliseconds.'); return; }
   invalidate(); const id = ++job;
   $('convert').disabled = true; $('convert').firstChild.textContent = 'Converting… ';
   for (const key of ['copy', 'download', 'export-download', 'report']) $(key).disabled = true;
   $('result-state').textContent = 'Reading your sketch…';
-  const options = { loop: $('loop-mode').value, initialDelay: Number($('initial-delay').value), comments: $('comments').checked, target: $('output-target').value, device: $('device-target').value };
+  const options = { loop: $('loop-mode').value, initialDelay, comments: $('comments').checked, target: $('output-target').value, device: $('device-target').value };
   try {
     worker = new Worker(new URL('./worker.mjs', import.meta.url), { type: 'module' });
     timeout = setTimeout(() => { if (id !== job) return; stopWorker(); failConversion('Conversion took longer than 3 seconds. Try a smaller sketch or reduce the number of loop iterations.'); }, 3000);
@@ -153,7 +156,8 @@ $('device-target').addEventListener('change', () => updateTarget('device'));
 updateTarget('device');
 $('convert').onclick = run; $('import').onclick = () => $('file').click();
 $('input').addEventListener('input', invalidate);
-for (const id of ['loop-mode', 'initial-delay', 'comments']) $(id).addEventListener('change', invalidate);
+for (const id of ['loop-mode', 'comments']) $(id).addEventListener('change', invalidate);
+$('initial-delay').addEventListener('input', invalidate);
 for (const [input, lineNumbers] of [['input', 'input-gutter'], ['output', 'output-gutter']]) $(input).addEventListener('scroll', () => { $(lineNumbers).scrollTop = $(input).scrollTop; });
 $('input').addEventListener('keydown', event => { if (event.altKey && event.key === 'Tab') { event.preventDefault(); $('input').setRangeText('  ', $('input').selectionStart, $('input').selectionEnd, 'end'); invalidate(); } });
 document.addEventListener('keydown', event => { if ((event.ctrlKey || event.metaKey) && event.key === 'Enter' && !$('workspace').hidden) { event.preventDefault(); run(); } });

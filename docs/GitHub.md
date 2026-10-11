@@ -6,11 +6,11 @@ Prepare the repository, wiki and release without inventing a live URL.
 
 > The first public release is v1.0 (SemVer 1.0.0). Development improvements stay within this version until TabGrinder approves the release. GitHub tags are separate from the hosting platform’s deployment history.
 
-The suggested repository name is inoquill, owned by TabGrinder. The supplied ZIP is ready to import. This project has not been pushed to a GitHub repository on your behalf.
+The public repository is https://github.com/TabGrinder/inoquill. The embedded documentation is included in the deployed site.
 
 ## Create the repository
 
-- For the planned free GitHub Pages publication, create a public repository named inoquill. Public source can be downloaded, cloned and forked; removing download buttons does not prevent this. Import all prepared source files, including .github; exclude .openai hosting metadata.
+- The GitHub Pages repository is public. Public source can be downloaded, cloned and forked; removing download buttons does not prevent this. Import all prepared source files, including .github; exclude .openai hosting metadata.
 - Set the description to: Browser-local Arduino keyboard sketch to DuckyScript 1.0, 2.0, and 3.0 converter with device presets and source tracing.
 - Suggested topics: arduino, duckyscript, digikeyboard, keyboard-automation, security-awareness, ethical-hacking, static-analysis.
 - Enable private vulnerability reporting and review issue, Actions and branch permissions.
@@ -35,3 +35,5 @@ git clone https://github.com/TabGrinder/inoquill.wiki.git
 - Keep the MIT license and educational-use disclaimer visible.
 - Do not add unverified “first ever”, security certification or “zero vulnerabilities” claims.
 
+
+Updates to main trigger the Pages workflow after validation; manual runs remain available.

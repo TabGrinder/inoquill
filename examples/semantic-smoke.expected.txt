@@ -1,0 +1,13 @@
+REM InoQuill 1.0.0 | DuckyScript 3.0
+ATTACKMODE HID
+REM setup()
+DELAY 3000
+STRING InoQuill check
+ENTER
+STRING 2147483647
+ENTER
+STRING A
+ENTER
+STRING 7
+ENTER
+REM loop() one iteration

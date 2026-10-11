@@ -1,5 +1,15 @@
 # Changelog
 
+## Semantic correctness review — 11 October 2026
+
+- Correct unsigned shifts, parenthesized characters, macro precedence and explicit key definitions.
+- Model AVR integer promotions and unsigned arithmetic, reject signed overflow, and preserve macro/source tracing.
+- Correct block scope, hex escapes, Keyboard.end state, rollover limits and Keyboard string carriage returns.
+- Add 12 originally failing regressions and a native C++ oracle with 171 profile comparisons.
+- Invalidate stale downloads on startup-delay edits and reject empty/invalid delays.
+- Link public GitHub reporting, update publication records and provide honest browser/device acceptance steps.
+- Keep version 1.0.0. Browser, destination-toolchain and physical-device verification remain pending.
+
 ## 1.0.0 — 2026-10-09
 
 - Fixed conditional hidden-file alias disclosure in the local static server; added regular-file/size/Host/fetch-metadata checks and bounded HTTP settings.
