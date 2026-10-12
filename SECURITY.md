@@ -4,7 +4,7 @@ Maintainer: **TabGrinder**. Current maintained release line: **1.0.x**. The publ
 
 ## Report privately
 
-When this project is published, use GitHub private vulnerability reporting if enabled. Otherwise ask TabGrinder for a secure contact method without posting exploit details publicly. Do not include secrets, personal data or live unauthorized targets. No contact email, response SLA, bounty or security certification is implied.
+Use GitHub private vulnerability reporting on TabGrinder/inoquill if enabled. Otherwise ask TabGrinder for a secure contact method without posting exploit details publicly. Do not include secrets, personal data or live unauthorized targets. No contact email, response SLA, bounty or security certification is implied.
 
 Provide the affected version, minimal reproduction, trust boundary crossed and proposed mitigation. A regression-only reproduction is preferable to a harmful payload.
 
@@ -23,3 +23,7 @@ See [Release review](docs/Release-Review.md), the test suite and the compatibili
 ## Developer-run assessment
 
 See [Security assessment](docs/Security-Assessment.md) for the local test scope, reproduced hidden-file alias finding, verified fixes, and outstanding production/browser/device checks. Keep the static root trusted and free of secrets. This development server is not a hardened public upload service.
+
+## Hosting differences
+
+The `_headers` file is a host-specific configuration file, not a browser-enforced policy. GitHub Pages does not apply these custom response headers. The HTML meta CSP covers supported directives, but cannot enforce `frame-ancestors`; the local server's framing protection must not be assumed on Pages. A host that supports response headers is required if response-level framing protection is an acceptance requirement.

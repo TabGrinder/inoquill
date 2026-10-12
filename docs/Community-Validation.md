@@ -12,7 +12,7 @@ Additional regression checks cover AVR integer promotions and suffixes, signed o
 
 ## Automated evidence
 
-`npm run check`: 129 tests passed, none failed or skipped. The test suite includes an independent C++17 compiler oracle: 313 expressions, checked against all three output profiles (939 comparisons). It uses fixed-width 32-bit values and other ABI-independent examples. AVR-specific 16-bit promotion rules have explicit regression assertions; a native desktop compiler does not independently validate the AVR ABI.
+`npm run check`: 137 tests passed, none failed or skipped. The test suite includes an independent C++17 compiler oracle: 313 expressions, checked against all three output profiles (939 comparisons). It uses fixed-width 32-bit values and other ABI-independent examples. AVR-specific 16-bit promotion rules have explicit regression assertions; a native desktop compiler does not independently validate the AVR ABI.
 
 The oracle compiles and executes only source written inside the test fixture, never uploaded sketches. Tests require g++; the browser and CLI do not. Existing tests also check UTF-8 import handling, race conditions, clipboard fallback, failed-export controls, Wiki routing, safe rendering, CLI boundaries and local-server access. DOM simulations are not real-browser tests.
 
@@ -45,3 +45,7 @@ See [Second semantic review](Second-Semantic-Review.md) for the four reproduced 
 ## Keyboard report review
 
 See [Keyboard report review](Keyboard-Report-Review.md) for nine regressions that failed before the fixes, the independent report-state model and remaining acceptance work.
+
+## Input, export and declaration review
+
+See [the latest review](Full-Project-Review.md) for array-initializer validation, import checks, report filenames and CLI delay handling. The suite now includes 137 tests; real-browser and hardware acceptance remain pending.

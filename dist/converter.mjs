@@ -757,6 +757,11 @@ export function convert(source, options = {}) {
         const declaration = ts.slice(0, j).map(t => t.v);
         declarationType(declaration);
         if (k > 1 && !declaration.includes('char')) throw new ConversionError('Only literal char arrays are supported.', line);
+        if (k > 1) {
+          let initializer = rest.slice(k + 1);
+          while (initializer[0]?.v === '(' && initializer.at(-1)?.v === ')') initializer = initializer.slice(1, -1);
+          if (pointer || !initializer.length || initializer.some(t => t.type !== 'string')) throw new ConversionError('A char array must be initialized directly from string literals. Array copies, pointer arrays, and F() initializers require manual adaptation.', line);
+        }
         if (scope.has(name)) throw new ConversionError('Variable shadowing or redeclaration needs manual adaptation: ' + name, line);
         if (declaration.includes('static')) throw new ConversionError('Static local state needs manual adaptation.', line);
         if (declaration.includes('void')) throw new ConversionError('A variable cannot have type void.', line);

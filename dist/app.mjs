@@ -135,7 +135,11 @@ function run() {
   } catch { stopWorker(); failConversion('The converter could not start. Open the page over HTTP or HTTPS in an up-to-date browser and try again.'); }
 }
 function save(content, name, type = 'text/plain;charset=utf-8') {
-  const safe = name.replace(/[^a-zA-Z0-9._-]/g, '-').slice(0, 140) || 'inoquill.txt';
+  const cleaned = name.replace(/[^a-zA-Z0-9._-]/g, '-');
+  const suffix = cleaned.match(/(?:\.review)?\.[a-zA-Z0-9]+$/)?.[0] || '.txt';
+  let stem = cleaned.endsWith(suffix) ? cleaned.slice(0, -suffix.length) : cleaned;
+  if (/^(con|prn|aux|nul|com[0-9]|lpt[0-9])(?:\.|$)/i.test(stem)) stem = 'inoquill-' + stem;
+  const safe = (stem.slice(0, Math.max(1, 140 - suffix.length)) || 'inoquill') + suffix;
   const url = URL.createObjectURL(new Blob([content], { type })), link = document.createElement('a');
   link.href = url; link.download = safe; link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
@@ -166,9 +170,8 @@ $('clear').onclick = () => { rememberSketch(); $('input').value = ''; filename =
 $('file').onchange = async () => {
   const file = $('file').files[0]; if (!file) return; const importTicket = importGate.begin(job);
   try {
-    if (file.size > 200000) throw Error('This file is too large. Choose one that is 200 KB or smaller.');
     if (!/\.(ino|cpp|txt)$/i.test(file.name)) throw Error('Choose an .ino, .cpp, or .txt file.');
-    const text = await readImportedSketch(file); if (!importGate.canApply(importTicket, job)) { if (importGate.isLatest(importTicket)) toast('The workspace changed while the file was loading. Import it again if you still want to use it.'); return; } if (text.includes('\0')) throw Error('The file contains binary data. Choose a plain-text sketch.');
+    const text = await readImportedSketch(file); if (!importGate.canApply(importTicket, job)) { if (importGate.isLatest(importTicket)) toast('The workspace changed while the file was loading. Import it again if you still want to use it.'); return; }
     rememberSketch(); $('input').value = text; filename = file.name; $('filename').textContent = filename; resetExportName(); invalidate(); toast('Sketch loaded. Choose your device, then select Convert sketch.');
   } catch (error) { if (importGate.canApply(importTicket, job)) toast(error.message); } finally { if (importGate.isLatest(importTicket)) $('file').value = ''; }
 };

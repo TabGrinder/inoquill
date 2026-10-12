@@ -18,10 +18,14 @@ export function matchesWiki(index, query) {
   return searchText(query).trim().split(/\s+/).filter(Boolean).every(word => index.includes(word));
 }
 export async function readImportedSketch(file) {
+  if (file.size > 200000) throw Error('This file is too large. Choose one that is 200 KB or smaller.');
   const bytes = await file.arrayBuffer();
   if (bytes.byteLength > 200000) throw Error('This file is too large. Choose one that is 200 KB or smaller.');
-  try { return new TextDecoder('utf-8', { fatal: true }).decode(bytes); }
+  let source;
+  try { source = new TextDecoder('utf-8', { fatal: true }).decode(bytes); }
   catch { throw Error('The file is not valid UTF-8. Save your sketch as UTF-8 and try again.'); }
+  if (source.includes('\0')) throw Error('The file contains binary data. Choose a plain-text sketch.');
+  return source;
 }
 // Cache successful optional assets; failed loads can be retried.
 export function createCachedLoader(load) {

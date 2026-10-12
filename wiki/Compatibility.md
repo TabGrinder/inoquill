@@ -58,3 +58,5 @@ Object-like macros expand as C++ tokens before parsing. For example, #define N 1
 
 Text and pointer arithmetic are not evaluated. Incrementing a text pointer, incrementing a String, or reassigning a char array stops conversion with a specific error. Literal text and simple supported text assignment remain available. Conditions in if, while, and for must resolve to numeric or Boolean values; pointer and string truth values are not inferred.
 
+Initialize a char array directly from string literals, including object-like macros that expand to literals. Copying another array into its initializer, arrays of pointers, and F() array initializers are not supported. InoQuill reports an error rather than guessing the intended C++ behavior.
+

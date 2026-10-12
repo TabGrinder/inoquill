@@ -1,5 +1,13 @@
 # Changelog
 
+## Input, export and declaration review — 12 October 2026
+
+- Reject invalid char-array initializers instead of producing apparently valid output. Add independent C++ rejection fixtures across all output profiles.
+- Preserve report filename extensions and protect reserved Windows stems.
+- Centralize import size and binary checks; reject oversized files before reading.
+- Reject whitespace-only CLI startup delays.
+- Add eight tests (137 total), update the Wiki and document hosting security-header limits. Keep v1.0.0.
+
 ## Keyboard report review — 11 October 2026
 
 - Preserve common held keys across DigiKeyboard reports; avoid extra keydowns when repeating a report or stroking an already-held key.

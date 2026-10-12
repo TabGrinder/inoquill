@@ -33,7 +33,10 @@ try {
       if (argument === '--loop') options.loop = value;
       if (argument === '--target') options.target = value;
       if (argument === '--device') options.device = value;
-      if (argument === '--delay') options.initialDelay = Number(value);
+      if (argument === '--delay') {
+        if (!value.trim()) throw Error('Missing numeric value for --delay.');
+        options.initialDelay = Number(value);
+      }
     } else if (argument.startsWith('-')) throw Error('Unknown option: ' + argument);
     else if (!input) input = argument;
     else throw Error('Only one input file is accepted.');
