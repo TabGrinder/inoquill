@@ -88,7 +88,7 @@ test('independent C++ compiler agrees on 313 expressions for every target', () =
     });
   }
 });
-test('independent C++ reference confirms the four second-review boundaries',()=>{
+test('independent C++ reference checks pointers, conditions, side effects and line splicing',()=>{
  const dir=mkdtempSync(join(tmpdir(),'inoquill-boundaries-'));
  const slash=String.fromCharCode(92);
  const cases=[

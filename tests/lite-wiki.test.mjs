@@ -8,12 +8,12 @@ test('optional wiki loader shares concurrent requests and retries failures',asyn
  const first=load(),same=load();assert.equal(first,same);await assert.rejects(first,/Temporary failure/);
  assert.equal(await load(),module);assert.equal(await load(),module);assert.equal(count,2);
 });
-test('user wiki has ten topics, requested labels and no removed-guide links or downloads',async()=>{
+test('user wiki has ten linked user guides and loads on demand',async()=>{
  assert.equal(wikiPages.length,10);
- const removed=['API','CLI','Deployment','Security','Contributing','GitHub','Release-Review'];
- for(const id of removed)assert.ok(!wikiPages.some(page=>page.id===id));
+ const topics=['Home','Getting-Started','Output-Targets','Compatibility','Keys','Text','Control-Flow','Diagnostics','Disclaimer','References'];
+ assert.deepEqual(wikiPages.map(page=>page.id).sort(),topics.sort());
  assert.equal(wikiPages.find(page=>page.id==='Disclaimer').title,'Use disclaimer');
- for(const page of wikiPages)for(const block of page.blocks)if(block.type==='links')for(const link of block.items)assert.ok(!removed.includes(link.href.replace('#wiki/','')));
+ for(const page of wikiPages)for(const block of page.blocks)if(block.type==='links')for(const link of block.items)if(link.href.startsWith('#wiki/'))assert.ok(topics.includes(link.href.slice(6)));
  const renderer=await readFile('dist/wiki.mjs','utf8');assert.doesNotMatch(renderer,/Download this guide|wiki-download|\.download/);
  const app=await readFile('dist/app.mjs','utf8');assert.doesNotMatch(app,/^import .*from '\.\/wiki\.mjs'/m);assert.match(app,/await import\('\.\/wiki\.mjs'\)/);
 });

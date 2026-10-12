@@ -16,13 +16,11 @@ These controls reduce risk; they do not guarantee the absence of vulnerabilities
 
 The local static server is a development utility, not an independently audited internet-facing service. It binds to loopback by default. Deploy the static app through a maintained host, verify actual security headers, and keep Node/browser versions supported.
 
-## Verification
+## Verification limits
 
-See [Release review](docs/Release-Review.md), the test suite and the compatibility matrix. No independent penetration test, physical-device test, complete WCAG audit or proprietary destination compiler verification has been performed. Enable private reporting and review repository permissions before public release.
+Automated tests cover parser behavior, input limits, safe rendering and local-server boundaries. They do not certify device compatibility, full accessibility conformance or the absence of vulnerabilities. Real-browser interaction, destination compilation and physical-device verification remain pending. See [browser and device testing](docs/Device-Acceptance.md).
 
-## Developer-run assessment
-
-See [Security assessment](docs/Security-Assessment.md) for the local test scope, reproduced hidden-file alias finding, verified fixes, and outstanding production/browser/device checks. Keep the static root trusted and free of secrets. This development server is not a hardened public upload service.
+Keep the static root trusted and free of secrets. This development server is not a public upload service.
 
 ## Hosting differences
 

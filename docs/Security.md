@@ -23,20 +23,10 @@ The worker is a responsiveness and resource-control boundary, not proof of unive
 
 ## Report a vulnerability
 
-After publication, use the repository Security tab and its private reporting form if TabGrinder has enabled it. Until a private channel is available, ask the maintainer for a secure contact method without publishing exploit details. Do not invent a contact address or post private data in a public issue.
+Use the repository Security tab and its private reporting form if TabGrinder has enabled it. Until a private channel is available, ask the maintainer for a secure contact method without publishing exploit details. Do not invent a contact address or post private data in a public issue.
 
-## Evidence and limits
+## Verification limits
 
-The release review records parser regression tests, server path/method checks and a deterministic malformed-input corpus. No claim of independent penetration testing, full WCAG conformance, destination compiler acceptance, physical-device verification or freedom from vulnerabilities is made.
+Automated tests exercise the converter, input handling, rendering and local server. Browser interaction, destination compilation and physical-device behavior require separate checks. See [browser and device testing](Device-Acceptance.md) and the [security policy](../SECURITY.md).
 
-- [Security policy](Security.md)
-- [Release review](Release-Review.md)
-
-## Developer-run security assessment
-
-The local assessment reproduced and fixed hidden-file disclosure through an in-root symlink alias. Additional hardening rejects foreign Host and cross-site requests, restricts served assets to regular files up to 5 MiB, and sets HTTP timeouts. The 56-test suite includes adversarial local HTTP requests and converter cases. Production access controls, browser interaction, device behavior, and an independent audit remain unverified.
-
-The 10 October engineering review corrected overlapping imports, stale clipboard fallback, duplicate target invalidation and repeated conversion shortcuts. It also improved guide search and keyboard navigation. All 60 automated tests passed. The source package includes docs/Professional-Review.md with scope, findings and outstanding browser, production and device checks.
-
-Five sequential developer-run audit rounds covered input security, export integrity, import reliability, accessibility structure and release consistency. They corrected bounded CLI reads, colliding script/report paths, strict browser UTF-8 imports, no-JavaScript guidance, source-trace table structure and the maintained-version policy. All 65 automated tests passed. Read docs/Five-Pass-Audit.md in the source package for evidence and limitations. These rounds are not independent company audits or certifications.
-
+GitHub Pages does not apply the custom response headers in `_headers`. The HTML CSP covers supported directives but cannot enforce `frame-ancestors`. Do not assume that the local server's response-header protections apply to every host.

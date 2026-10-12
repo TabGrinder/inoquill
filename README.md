@@ -2,7 +2,7 @@
 
 **Arduino keyboard sketches to DuckyScript 1.0, 2.0, and 3.0. By TabGrinder.**
 
-Translate known keyboard sequences locally. Inspect source-line mappings, review deliberate adaptations, and choose a destination device and export source for its supported language profile.
+Turn supported Arduino keyboard sketches into DuckyScript in your browser. Choose your device, check the output alongside your source, and download the script when you are ready.
 
 Use the [web app](https://tabgrinder.github.io/inoquill/) to try an example without installing anything.
 
@@ -93,8 +93,6 @@ Long waits are split into commands of at most 65,535 ms (10,000 ms for the 2.0 p
 | Convert from a terminal | [CLI](docs/CLI.md) |
 | Host the app | [Deployment](docs/Deployment.md) |
 | Review trust boundaries | [Security policy](SECURITY.md) |
-| Publish as TabGrinder | [GitHub preparation](docs/GitHub.md) |
-| Review release evidence | [Release review](docs/Release-Review.md) |
 
 ## Development
 
@@ -128,13 +126,13 @@ InoQuill is a subset translator, not a C++ compiler or Arduino emulator. Dynamic
 
 Integer handling models AVR 16-bit int and 32-bit long promotions. Unsigned arithmetic wraps at its promoted width; signed overflow and out-of-range assignments are rejected. Macros use token substitution. This is not a cross-board C++ ABI implementation. Source timing, USB transport, keyboard layout and host focus still require review. See the matrix before relying on a translation.
 
-Automated tests cover engine behavior, malformed input, server boundaries and release artifacts. This release has not undergone independent security assessment, interactive visual browser QA, PayloadStudio compilation or physical Rubber Ducky verification. Header enforcement depends on the final host. No claim of zero vulnerabilities is made.
+Automated tests cover engine behavior, malformed input, server boundaries and release artifacts. Real-browser interaction, destination compilation and physical-device compatibility still need direct verification. Header enforcement depends on the host. See the [security policy](SECURITY.md) and [device testing guide](docs/Device-Acceptance.md).
 
-## Publish under TabGrinder
+## Community
 
 Source: [TabGrinder/inoquill](https://github.com/TabGrinder/inoquill). The public app is hosted at [GitHub Pages](https://tabgrinder.github.io/inoquill/). The Pages workflow checks and deploys updates to `main`; it can also be started manually. Public source can be downloaded, cloned, and forked. The embedded Wiki ships with the app; GitHub's separate Wiki requires separate initialization.
 
-Report reproducible problems using [the issue form](https://github.com/TabGrinder/inoquill/issues/new?template=bug_report.yml). Prepare bug report downloads local settings without your sketch. Review attachments before posting. See [current validation evidence](docs/Community-Validation.md) and [device acceptance steps](docs/Device-Acceptance.md).
+Report reproducible problems using [the issue form](https://github.com/TabGrinder/inoquill/issues/new?template=bug_report.yml). Prepare bug report downloads local settings without your sketch. Review attachments before posting. See [browser and device testing](docs/Device-Acceptance.md) for a practical checklist.
 
 ## Credits and licensing
 
@@ -146,44 +144,6 @@ DuckyScript and USB Rubber Ducky are trademarks of Hak5 LLC. InoQuill is indepen
 
 Use the Light mode/Dark mode button in the header. The app starts with your system preference and keeps manual changes in memory until reload. No sketch or theme preference is saved to browser storage. The Project tab explains Clear boundaries. Installation and CLI instructions are available in the repository documentation.
 
-## Security assessment
+## The name
 
-A developer-run source and loopback assessment fixed a conditional hidden-file alias disclosure and added asset, host, and HTTP limits. See [scope, findings, evidence, and remaining risks](docs/Security-Assessment.md). The result view now prioritizes blocking errors and keeps failure summaries visible. The report does not certify production infrastructure, device behavior, or absence of vulnerabilities.
-
-## Engineering review
-
-The latest review fixed overlapping imports and stale clipboard fallback, avoids restarting an active conversion, and searches full Wiki content. Navigation focuses the destination heading and search reports its result count to assistive technology. See [findings and validation limits](docs/Professional-Review.md). Automated tests passed at that review; interactive browser and physical-device checks remain pending.
-
-## Five-pass audit
-
-Five sequential developer-run reviews hardened bounded CLI input, rejected colliding script/report paths, added strict UTF-8 imports and improved no-JavaScript guidance and source-trace table structure. Security policy now consistently identifies v1.0. Automated tests passed at that review. See [audit rounds, evidence and outstanding checks](docs/Five-Pass-Audit.md). These reviews do not represent independent companies or certify the application. Imported files must be valid UTF-8 and at most 200,000 bytes.
-
-## Lightweight user interface
-
-The web Wiki contains ten user guides and loads only when opened. Per-guide Markdown download controls and developer/release topics are removed from the web Wiki. Developer documents remain in docs/ in the source package. The workbench layout, light/dark themes and v1.0 converter are unchanged.
-
-## Web publication
-
-The public website serves dist/ only. Project ZIP archives and checksums are built under releases/, outside the web root. The application offers downloads of converted scripts and review reports, not the entire project. Do not copy releases/ into the hosted assets. Browser-delivered application assets are still readable by visitors.
-
-## Name and publication readiness
-
-InoQuill combines `.ino`, the Arduino sketch extension, with “quill”, a writing pen: translating sketches into scripts. This is the project’s name, not a claim of exclusive trademark rights.
-
-See [publication readiness](docs/Publication-Readiness.md) for the license, public-source implications, current evidence and final-host checks. GitHub Pages availability has been checked; browser interaction and hardware acceptance are tracked separately.
-
-## Validation record
-
-See [Community validation](docs/Community-Validation.md) for automated evidence and the browser, compiler, and hardware checks still awaiting direct verification.
-
-## Latest semantic validation
-
-The second review corrected continued-comment handling and stops unsupported pointer/text operations, nonnumeric conditions and GPIO arguments with side effects before export. The current suite has 137 tests, a C++ oracle comparing 313 expressions across three profiles, and 1,000 deterministic malformed-input cases. See [the detailed evidence and limits](docs/Second-Semantic-Review.md). Browser interaction and physical-device acceptance remain pending.
-
-## Keyboard report review
-
-The latest review fixes repeated DigiKeyboard reports and numeric-looking text passed as key codes. Ten new tests cover these cases and 1,200 deterministic HID report transitions. See [the report](docs/Keyboard-Report-Review.md). Browser and hardware acceptance remain pending.
-
-## Input, export and declaration review
-
-See [the latest review](docs/Full-Project-Review.md) for array-initializer validation, import checks, report filenames and CLI delay handling. The suite now includes 137 tests; real-browser and hardware acceptance remain pending.
+InoQuill brings together `.ino`, the Arduino sketch extension, and “quill”, a writing pen.

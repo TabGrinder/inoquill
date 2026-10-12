@@ -1,7 +1,7 @@
 import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
-const ROOT_FILES = ['package.json','README.md','LICENSE','DISCLAIMER.md','SECURITY.md','CONTRIBUTING.md','CODE_OF_CONDUCT.md','CHANGELOG.md','server.mjs','cli.mjs','cli-input.mjs','.gitignore'];
+const ROOT_FILES = ['package.json','README.md','LICENSE','DISCLAIMER.md','SECURITY.md','CONTRIBUTING.md','CODE_OF_CONDUCT.md','server.mjs','cli.mjs','cli-input.mjs','.gitignore'];
 const ROOT_DIRS = ['dist','tests','scripts','docs','wiki','examples','.github'];
 const excluded = new Set(['inoquill-source.zip','inoquill-source.zip.sha256','sketchduck-source.zip']);
 const files = [];

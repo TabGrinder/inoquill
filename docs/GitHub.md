@@ -1,39 +1,21 @@
-# Publish under TabGrinder
+# Repository and publishing
 
-> InoQuill v1.0.0 by TabGrinder
+The source repository is [TabGrinder/inoquill](https://github.com/TabGrinder/inoquill). The app is hosted at [GitHub Pages](https://tabgrinder.github.io/inoquill/).
 
-Prepare the repository, wiki and release without inventing a live URL.
+## Website
 
-> The first public release is v1.0 (SemVer 1.0.0). Development improvements stay within this version until TabGrinder approves the release. GitHub tags are separate from the hosting platform’s deployment history.
+Pushes to `main` run the checks and deploy `dist/` through the Pages workflow. The workflow can also be run manually. Keep project archives, credentials and hosting metadata outside the public web root. See [Deployment](Deployment.md) for local and static hosting.
 
-The public repository is https://github.com/TabGrinder/inoquill. The embedded documentation is included in the deployed site.
+## Documentation
 
-## Create the repository
+Edit `docs/wiki-data.json`, then run `npm run docs`. This generates both the embedded Wiki and the Markdown files in `wiki/`.
 
-- The GitHub Pages repository is public. Public source can be downloaded, cloned and forked; removing download buttons does not prevent this. Import all prepared source files, including .github; exclude .openai hosting metadata.
-- Set the description to: Browser-local Arduino keyboard sketch to DuckyScript 1.0, 2.0, and 3.0 converter with device presets and source tracing.
-- Suggested topics: arduino, duckyscript, digikeyboard, keyboard-automation, security-awareness, ethical-hacking, static-analysis.
-- Enable private vulnerability reporting and review issue, Actions and branch permissions.
-- Run CI and inspect the release checklist before creating v1.0.0.
+GitHub's separate Wiki is a different repository and is optional. To use it, initialize it in GitHub, clone `https://github.com/TabGrinder/inoquill.wiki.git`, copy the generated Markdown files into it, and commit and push them.
 
-## Publish the GitHub wiki
+## Maintenance
 
-The wiki is a separate Git repository. Create its first page through GitHub so that the wiki remote exists, then copy the generated wiki/ Markdown files into a clone of that wiki and commit them. The same canonical content powers the web wiki; npm run docs regenerates both.
-
-```sh
-git clone https://github.com/TabGrinder/inoquill.wiki.git
-# Copy the contents of wiki/ into the cloned directory.
-# Review the diff, then commit and push.
-```
-
-> The URLs above are publication instructions for the proposed repository, not a claim that the repository or wiki is already live.
-
-## Release assets
-
-- A release ZIP is optional. A public GitHub repository already allows source downloads; the app itself offers only script and review-report downloads.
-- Use CHANGELOG.md and docs/Release-Review.md for release notes.
-- Keep the MIT license and educational-use disclaimer visible.
-- Do not add unverified “first ever”, security certification or “zero vulnerabilities” claims.
-
-
-Updates to main trigger the Pages workflow after validation; manual runs remain available.
+- Keep the MIT license, attribution and use disclaimer with the source.
+- Run `npm run check` and `npm run build` before publishing.
+- Keep repository and Actions permissions limited to what the project needs.
+- Enable private vulnerability reporting if available; otherwise provide a secure reporting channel.
+- Public source can be downloaded, cloned and forked. The web app offers downloads of scripts and conversion reports.
